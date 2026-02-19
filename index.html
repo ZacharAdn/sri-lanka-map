@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Sri Lanka Trip Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+#controls {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: #fff; padding: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+#location-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+}
+
+#location-select {
+  flex: 1; padding: 8px 12px; font-size: 16px; border: 2px solid #ddd;
+  border-radius: 8px; background: #fff; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+
+#pin-count {
+  font-size: 13px; color: #666; white-space: nowrap;
+}
+
+#filters {
+  display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+#filters::-webkit-scrollbar { display: none; }
+
+.filter-btn {
+  flex-shrink: 0; padding: 6px 14px; border: 2px solid; border-radius: 20px;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  display: flex; align-items: center; gap: 5px; white-space: nowrap;
+}
+.filter-btn .dot {
+  width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+}
+.filter-btn.active { color: #fff; }
+.filter-btn:not(.active) { background: #fff; opacity: 0.5; }
+
+#map { position: fixed; top: 0; left: 0; right: 0; bottom: 0; }
+
+.leaflet-popup-content-wrapper {
+  border-radius: 10px; font-size: 14px;
+}
+.leaflet-popup-content { margin: 10px 14px; line-height: 1.4; }
+.popup-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.popup-cat { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.popup-desc { color: #555; font-size: 13px; }
+.nav-btn {
+  display: inline-block; margin-top: 8px; padding: 6px 14px;
+  background: #4285f4; color: #fff; border-radius: 6px;
+  text-decoration: none; font-size: 13px; font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <div id="location-row">
+    <select id="location-select"></select>
+    <span id="pin-count"></span>
+  </div>
+  <div id="filters"></div>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const CATEGORIES = {
+  accommodation: { label: 'Stay',      color: '#2d8a4e' },
+  surf:          { label: 'Surf',      color: '#0077cc' },
+  chabad:        { label: 'Chabad',    color: '#7b2d8e' },
+  food:          { label: 'Food',      color: '#d63031' },
+  cafe:          { label: 'Cafe',      color: '#e17055' },
+  beach:         { label: 'Beach',     color: '#00b894' },
+  shopping:      { label: 'Shopping',  color: '#fdcb6e' },
+  services:      { label: 'Services',  color: '#636e72' },
+  transport:     { label: 'Transport', color: '#6c5ce7' },
+};
+
+const DESTINATIONS = {
+  "hikkaduwa": {
+    "center": [
+      6.12,
+      80.1
+    ],
+    "zoom": 14,
+    "data": {
+      "accommodation": [
+        {
+          "name": "Home Away Guesthouse",
+          "lat": 6.128,
+          "lng": 80.101,
+          "desc": "Feb 15-17. $17.50/night. Quiet jungle vibe, good kitchen. Far from surf."
+        }
+      ],
+      "surf": [
+        {
+          "name": "Owakanda Point",
+          "lat": 6.0722,
+          "lng": 80.087,
+          "desc": "#1 \u2014 mellow lefts, longboard, deep reef. 20 min tuk-tuk south."
+        },
+        {
+          "name": "Narigama Beach (Surf)",
+          "lat": 6.1069,
+          "lng": 80.0978,
+          "desc": "Sand bottom, warmup sessions. Board rental on beach ~$11-15."
+        },
+        {
+          "name": "North Jetty",
+          "lat": 6.138,
+          "lng": 80.105,
+          "desc": "Left-dominant reef. Quality long lefts, intermediate+."
+        }
+      ],
+      "beach": [
+        {
+          "name": "Coral Sanctuary / Hikkaduwa Reef",
+          "lat": 6.1311,
+          "lng": 80.1005,
+          "desc": "Snorkeling spot. Glass-bottom boats, coral, sea turtles."
+        }
+      ],
+      "chabad": [
+        {
+          "name": "Chabad Hikkaduwa",
+          "lat": 6.1411,
+          "lng": 80.1017,
+          "desc": "397 Galle Rd. +94 76 883 3653. Status uncertain for 2026."
+        }
+      ],
+      "food": [
+        {
+          "name": "Ranjith Cafe",
+          "lat": 6.1174,
+          "lng": 80.0996,
+          "desc": "Local food, cheap rice & curry."
+        },
+        {
+          "name": "No.1 Roti Restaurant",
+          "lat": 6.119,
+          "lng": 80.1,
+          "desc": "Best roti in Hikkaduwa."
+        }
+      ],
+      "shopping": [
+        {
+          "name": "Cargills Food City Express",
+          "lat": 6.133,
+          "lng": 80.102,
+          "desc": "162 Galle Rd. Main supermarket."
+        }
+      ],
+      "services": [
+        {
+          "name": "Reef End Surf School",
+          "lat": 6.11,
+          "lng": 80.0985,
+          "desc": "Est. 2004, good wave matching."
+        },
+        {
+          "name": "Hippie Surf School",
+          "lat": 6.112,
+          "lng": 80.099,
+          "desc": "1:1 intermediate coaching."
+        },
+        {
+          "name": "Owakanda Surf School",
+          "lat": 6.0725,
+          "lng": 80.0865,
+          "desc": "At the point break. Longboard-focused."
+        }
+      ],
+      "cafe": [],
+      "transport": []
+    }
+  },
+  "unawatuna": {
+    "center": [
+      6.01,
+      80.248
+    ],
+    "zoom": 15,
+    "data": {
+      "accommodation": [
+        {
+          "name": "Sea & Greens Apartments (BOOKED)",
+          "lat": 6.0088,
+          "lng": 80.2476,
+          "desc": "Feb 17-20. ~$26/night. 9.7/10. Stovetop, WiFi 10/10, balcony, private entrance."
+        }
+      ],
+      "surf": [
+        {
+          "name": "Bonavista Beach (Surf Spot)",
+          "lat": 6.0096,
+          "lng": 80.2484,
+          "desc": "Reef break. Check swell. ~800-900m from Sea & Greens."
+        },
+        {
+          "name": "Dewata Surf School",
+          "lat": 6.0105,
+          "lng": 80.244,
+          "desc": "Board rental & lessons in Unawatuna."
+        }
+      ],
+      "beach": [
+        {
+          "name": "Unawatuna Beach",
+          "lat": 6.0097,
+          "lng": 80.2474,
+          "desc": "Main beach. Sheltered bay, calm, good swimming."
+        },
+        {
+          "name": "Jungle Beach",
+          "lat": 6.0173,
+          "lng": 80.2375,
+          "desc": "Small hidden beach. 15 min walk through forest from Unawatuna."
+        }
+      ],
+      "food": [
+        {
+          "name": "Bedspace Kitchen",
+          "lat": 6.0125,
+          "lng": 80.2492,
+          "desc": "Cafe with good food, popular with travelers."
+        },
+        {
+          "name": "Lucky Tuna",
+          "lat": 6.0097,
+          "lng": 80.2475,
+          "desc": "Seafood, grilled fish. Beachside."
+        },
+        {
+          "name": "Kingfisher Restaurant",
+          "lat": 6.0112,
+          "lng": 80.2495,
+          "desc": "Sri Lankan & Western. Rice & curry."
+        },
+        {
+          "name": "Happy Banana",
+          "lat": 6.0115,
+          "lng": 80.2478,
+          "desc": "Budget rice & curry, local favorite."
+        },
+        {
+          "name": "Wijaya Beach Restaurant",
+          "lat": 6.006,
+          "lng": 80.2415,
+          "desc": "Beach restaurant, grilled seafood. Near Bonavista."
+        }
+      ],
+      "cafe": [
+        {
+          "name": "South Ceylon Bakery & Cafe",
+          "lat": 6.0118,
+          "lng": 80.248,
+          "desc": "Coffee, pastries, good WiFi. Laptop-friendly."
+        },
+        {
+          "name": "Cafe Ru",
+          "lat": 6.0125,
+          "lng": 80.25,
+          "desc": "Coffee shop, smoothie bowls."
+        }
+      ],
+      "shopping": [
+        {
+          "name": "Cargills Food City Unawatuna",
+          "lat": 6.0014,
+          "lng": 80.251,
+          "desc": "Main supermarket in Unawatuna."
+        },
+        {
+          "name": "Unawatuna Fruit & Veg Stalls",
+          "lat": 6.017,
+          "lng": 80.2475,
+          "desc": "Roadside stalls along Matara Rd. Cheap fresh produce."
+        }
+      ],
+      "services": [
+        {
+          "name": "eFix Galle (Mac Repair)",
+          "lat": 6.0368,
+          "lng": 80.2178,
+          "desc": "75B Sri Hemanandha Mawatha, Galle. 5.0/5 (1375 reviews). +94 77 061 2021."
+        },
+        {
+          "name": "Galle Fort (UNESCO)",
+          "lat": 6.0286,
+          "lng": 80.2168,
+          "desc": "Historic fort. Cafes, shops, sunset walk. 10 min tuk-tuk."
+        },
+        {
+          "name": "Galle Train Station",
+          "lat": 6.0535,
+          "lng": 80.221,
+          "desc": "Main train station. Trains to Colombo, Matara, Weligama."
+        }
+      ],
+      "transport": [
+        {
+          "name": "Unawatuna Junction (Bus)",
+          "lat": 6.017,
+          "lng": 80.2468,
+          "desc": "Bus stop on Matara Rd. Buses to Galle, Weligama, Matara."
+        }
+      ],
+      "chabad": []
+    }
+  },
+  "weligama": {
+    "center": [
+      5.973,
+      80.427
+    ],
+    "zoom": 15,
+    "data": {
+      "accommodation": [
+        {
+          "name": "Sana Guest (BOOKED)",
+          "lat": 5.9729,
+          "lng": 80.4267,
+          "desc": "Feb 20-22. $37/night. 4.9/5. Full kitchen, WiFi, balcony. 8-12 min walk to Chabad."
+        }
+      ],
+      "surf": [
+        {
+          "name": "Weligama Bay (Longboard)",
+          "lat": 5.972,
+          "lng": 80.428,
+          "desc": "Beginner paradise. Wide sandy bay, gentle waves. Cheapest board rental on coast."
+        }
+      ],
+      "beach": [
+        {
+          "name": "Weligama Beach",
+          "lat": 5.9715,
+          "lng": 80.429,
+          "desc": "Main beach. Long sandy stretch, calm."
+        }
+      ],
+      "chabad": [
+        {
+          "name": "Chabad Weligama + Kosher Restaurant",
+          "lat": 5.9735,
+          "lng": 80.4295,
+          "desc": "17 Buhari Masjid Rd. Rabbi Yossi Romach. +94 74 360 0652. Only kosher restaurant on south coast."
+        }
+      ],
+      "food": [
+        {
+          "name": "Weligama Fish Market",
+          "lat": 5.971,
+          "lng": 80.426,
+          "desc": "Fresh catch. Go early morning for best selection."
+        }
+      ],
+      "shopping": [
+        {
+          "name": "Cargills Food City Weligama",
+          "lat": 5.974,
+          "lng": 80.427,
+          "desc": "Old Galle Road. Main supermarket."
+        },
+        {
+          "name": "Global Food City",
+          "lat": 5.9738,
+          "lng": 80.4265,
+          "desc": "Smaller local shop."
+        }
+      ],
+      "cafe": [],
+      "services": [],
+      "transport": []
+    }
+  },
+  "hiriketiya": {
+    "center": [
+      5.9627,
+      80.7072
+    ],
+    "zoom": 15,
+    "data": {
+      "accommodation": [
+        {
+          "name": "SurfBayVilla (BOOKED)",
+          "lat": 5.9668,
+          "lng": 80.6987,
+          "desc": "Feb 24-27. $65/night. Dickwella. AC, WiFi (SURF1111), kitchen, garden. Host: Chamila 077-2260486."
+        }
+      ],
+      "surf": [
+        {
+          "name": "Hiriketiya Bay \u2014 West (Beginner)",
+          "lat": 5.962,
+          "lng": 80.7065,
+          "desc": "Beach break, sand bottom. Soft rolling waves. Board rental shacks here. Warmup spot."
+        },
+        {
+          "name": "Hiriketiya Bay \u2014 Middle (Intermediate)",
+          "lat": 5.9625,
+          "lng": 80.7075,
+          "desc": "A-frame peaks, left-breaking. Rock reef \u2192 sand. Your sweet spot \u2014 mellow lefts, 50m+ rides. Best at mid-tide."
+        },
+        {
+          "name": "Hiriketiya Bay \u2014 East Reef (Advanced)",
+          "lat": 5.963,
+          "lng": 80.7085,
+          "desc": "Fast walling left over shallow reef. 150-350m rides. Experts only when big."
+        },
+        {
+          "name": "Dickwella Beach (Surf)",
+          "lat": 5.9668,
+          "lng": 80.695,
+          "desc": "Right-hand beach break, sand. Beginner-intermediate. Punchier than Hiri. 2 min from SurfBayVilla."
+        },
+        {
+          "name": "Kudawella Beach",
+          "lat": 5.959,
+          "lng": 80.725,
+          "desc": "Multiple peaks, sand. Long mellow waves, great for longboarding. 10 min tuk-tuk."
+        }
+      ],
+      "beach": [
+        {
+          "name": "Hiriketiya Beach",
+          "lat": 5.9622,
+          "lng": 80.7068,
+          "desc": "Beautiful horseshoe bay. Swimming, surf, chill."
+        },
+        {
+          "name": "Dickwella Beach",
+          "lat": 5.967,
+          "lng": 80.6945,
+          "desc": "Main Dickwella beach. Surf + swimming."
+        }
+      ],
+      "chabad": [],
+      "food": [
+        {
+          "name": "Garlic Cafe",
+          "lat": 5.9626,
+          "lng": 80.706,
+          "desc": "Curry buffet evenings. 500 LKR ($1.60). Cheapest meal in Hiri."
+        },
+        {
+          "name": "Duni's Hoppers Cafe",
+          "lat": 5.9624,
+          "lng": 80.7063,
+          "desc": "Veg rice & curry + dessert. 750 LKR ($2.50)."
+        },
+        {
+          "name": "Lemon Grass Cafe",
+          "lat": 5.9628,
+          "lng": 80.7058,
+          "desc": "Rice & curry, 4+ curries, unlimited refills, fruit dessert. 1,000 LKR ($3.30)."
+        },
+        {
+          "name": "Hiriketiya Seafood Restaurant",
+          "lat": 5.9618,
+          "lng": 80.7072,
+          "desc": "Rice & curry buffet. 1,200 LKR ($4)."
+        },
+        {
+          "name": "Raa Hiriketiya",
+          "lat": 5.962,
+          "lng": 80.708,
+          "desc": "Oceanfront cocktail bar + dinner. High quality food."
+        }
+      ],
+      "cafe": [
+        {
+          "name": "Mond",
+          "lat": 5.9623,
+          "lng": 80.7066,
+          "desc": "#1 digital nomad spot. Cliff-side, ocean breeze. Best coffee in town. Strong WiFi."
+        },
+        {
+          "name": "KiXi",
+          "lat": 5.9625,
+          "lng": 80.707,
+          "desc": "Best iced long black in Sri Lanka. Upstairs working area. Order hourly."
+        },
+        {
+          "name": "Dots Bay House",
+          "lat": 5.9619,
+          "lng": 80.7076,
+          "desc": "Restaurant + bar + 24/7 coworking. Desks & bean bags. Social hub of Hiri."
+        },
+        {
+          "name": "Verse Collective",
+          "lat": 5.966,
+          "lng": 80.7,
+          "desc": "Proper coworking. 100 Mbps WiFi. Indoor + outdoor desks. Closer to Dickwella."
+        }
+      ],
+      "shopping": [
+        {
+          "name": "Cargills Supermarket Dickwella",
+          "lat": 5.9672,
+          "lng": 80.6982,
+          "desc": "2 min from SurfBayVilla. Main supermarket."
+        }
+      ],
+      "services": [
+        {
+          "name": "Hiri Surf School",
+          "lat": 5.9621,
+          "lng": 80.7062,
+          "desc": "Board rental + lessons at the bay."
+        },
+        {
+          "name": "Dickwella Main Bus Stand",
+          "lat": 5.967,
+          "lng": 80.699,
+          "desc": "Main bus stop. 150m from SurfBayVilla."
+        }
+      ],
+      "transport": [
+        {
+          "name": "Dickwella Main Bus Stand",
+          "lat": 5.967,
+          "lng": 80.699,
+          "desc": "Buses to Matara, Tangalle. 150m from SurfBayVilla."
+        }
+      ]
+    }
+  }
+};
+
+const map = L.map('map', { zoomControl: false });
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap',
+  maxZoom: 18
+}).addTo(map);
+
+let currentLocation = Object.keys(DESTINATIONS)[0];
+let activeCategories = new Set(Object.keys(CATEGORIES));
+let markers = {};
+
+const select = document.getElementById('location-select');
+for (const loc of Object.keys(DESTINATIONS)) {
+  const opt = document.createElement('option');
+  opt.value = loc;
+  opt.textContent = loc.charAt(0).toUpperCase() + loc.slice(1);
+  select.appendChild(opt);
+}
+select.addEventListener('change', () => {
+  currentLocation = select.value;
+  renderMap();
+});
+
+const filtersEl = document.getElementById('filters');
+for (const [cat, info] of Object.entries(CATEGORIES)) {
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn active';
+  btn.dataset.category = cat;
+  btn.style.borderColor = info.color;
+  btn.style.backgroundColor = info.color;
+  btn.innerHTML = `<span class="dot" style="background:${info.color}"></span>${info.label}`;
+  btn.addEventListener('click', () => toggleCategory(cat, btn));
+  filtersEl.appendChild(btn);
+}
+
+function toggleCategory(cat, btn) {
+  if (activeCategories.has(cat)) {
+    activeCategories.delete(cat);
+    btn.classList.remove('active');
+    btn.style.backgroundColor = '#fff';
+    btn.style.color = CATEGORIES[cat].color;
+  } else {
+    activeCategories.add(cat);
+    btn.classList.add('active');
+    btn.style.backgroundColor = CATEGORIES[cat].color;
+    btn.style.color = '#fff';
+  }
+  updateMarkerVisibility();
+  updatePinCount();
+}
+
+function createMarker(place, cat) {
+  const color = CATEGORIES[cat].color;
+  const marker = L.circleMarker([place.lat, place.lng], {
+    radius: 10,
+    fillColor: color,
+    color: '#fff',
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.9
+  });
+  const navUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' Sri Lanka')}`;
+  marker.bindPopup(
+    `<div class="popup-name">${place.name}</div>` +
+    `<div class="popup-cat" style="color:${color}">${CATEGORIES[cat].label}</div>` +
+    (place.desc ? `<div class="popup-desc">${place.desc}</div>` : '') +
+    `<a class="nav-btn" href="${navUrl}" target="_blank">Navigate</a>`
+  );
+  return marker;
+}
+
+function renderMap() {
+  for (const arr of Object.values(markers)) {
+    arr.forEach(m => map.removeLayer(m));
+  }
+  markers = {};
+
+  const dest = DESTINATIONS[currentLocation];
+  map.setView(dest.center, dest.zoom);
+
+  for (const [cat, places] of Object.entries(dest.data)) {
+    markers[cat] = [];
+    for (const place of places) {
+      const m = createMarker(place, cat);
+      markers[cat].push(m);
+      if (activeCategories.has(cat)) {
+        m.addTo(map);
+      }
+    }
+  }
+  updatePinCount();
+}
+
+function updateMarkerVisibility() {
+  for (const [cat, arr] of Object.entries(markers)) {
+    for (const m of arr) {
+      if (activeCategories.has(cat)) {
+        if (!map.hasLayer(m)) m.addTo(map);
+      } else {
+        map.removeLayer(m);
+      }
+    }
+  }
+}
+
+function updatePinCount() {
+  let visible = 0;
+  let total = 0;
+  const dest = DESTINATIONS[currentLocation];
+  for (const [cat, places] of Object.entries(dest.data)) {
+    total += places.length;
+    if (activeCategories.has(cat)) visible += places.length;
+  }
+  document.getElementById('pin-count').textContent = visible === total
+    ? `${total} pins`
+    : `${visible}/${total} pins`;
+}
+
+function adjustMapPadding() {
+  const h = document.getElementById('controls').offsetHeight;
+  document.getElementById('map').style.top = h + 'px';
+  map.invalidateSize();
+}
+
+window.addEventListener('resize', adjustMapPadding);
+setTimeout(adjustMapPadding, 100);
+
+renderMap();
+</script>
+</body>
+</html>
