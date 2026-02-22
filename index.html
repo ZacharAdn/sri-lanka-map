@@ -801,7 +801,7 @@ function createMarker(place, cat) {
     opacity: 1,
     fillOpacity: 0.9
   });
-  const navUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' Sri Lanka')}`;
+  const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
   marker.bindPopup(
     `<div class="popup-name">${place.name}</div>` +
     `<div class="popup-cat" style="color:${color}">${CATEGORIES[cat].label}</div>` +
