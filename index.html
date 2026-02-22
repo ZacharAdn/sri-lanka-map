@@ -391,6 +391,36 @@ const DESTINATIONS = {
           "lat": 5.9742,
           "lng": 80.4326,
           "desc": "Galbokka Rd. Surf hostel with cafe/restaurant."
+        },
+        {
+          "name": "Layback Rooftop Cafe ★",
+          "lat": 5.9730,
+          "lng": 80.4310,
+          "desc": "Rooftop cafe + AC coworking. Healthy food, smoothies, acai bowls. +94 76 630 0126"
+        },
+        {
+          "name": "NOMAD Cafe",
+          "lat": 5.9741,
+          "lng": 80.4378,
+          "desc": "#1 nomad cafe. Plant-forward food, reliable WiFi, many sockets. 640 Matara Rd."
+        },
+        {
+          "name": "Plan B Coworking",
+          "lat": 5.9680,
+          "lng": 80.4430,
+          "desc": "Dedicated cowork + cafe. 1 Gbps fiber, backup generator. Bypass Rd."
+        },
+        {
+          "name": "Hangten Rooftop",
+          "lat": 5.9729,
+          "lng": 80.4346,
+          "desc": "Rooftop at Hangtime Hostel. Good coffee, social events. Budget-friendly."
+        },
+        {
+          "name": "Ceylon Sliders",
+          "lat": 5.9730,
+          "lng": 80.4270,
+          "desc": "Courtyard cafe near beach. Specialty coffee, bowls, ocean view."
         }
       ],
       "shopping": [
@@ -646,6 +676,12 @@ const DESTINATIONS = {
           "lat": 5.9719,
           "lng": 80.3717,
           "desc": "Coworking space. High-speed WiFi, standing desks. East of Ahangama."
+        },
+        {
+          "name": "Zippi Cafe",
+          "lat": 5.9700,
+          "lng": 80.3640,
+          "desc": "Specialty coffee, matcha, focaccia sandwiches. Cowork-friendly."
         }
       ],
       "shopping": [
@@ -712,7 +748,20 @@ const DESTINATIONS = {
           "desc": "Beachfront cafe/restaurant. Good food, ocean views."
         }
       ],
-      "cafe": [],
+      "cafe": [
+        {
+          "name": "Surfescape Midigama",
+          "lat": 5.9650,
+          "lng": 80.3910,
+          "desc": "Beachfront cafe + cowork. Fiber WiFi, AC. Healthy food. $5-10/day pass."
+        },
+        {
+          "name": "Ram's Surfing Beach Cafe",
+          "lat": 5.9648,
+          "lng": 80.3895,
+          "desc": "Local beachfront cafe near Ram's break. Surfer crowd, simple food."
+        }
+      ],
       "shopping": [],
       "services": [
         {
@@ -737,6 +786,41 @@ const DESTINATIONS = {
         }
       ]
     }
+  },
+  "mirissa": {
+    "center": [5.948, 80.468],
+    "zoom": 15,
+    "data": {
+      "accommodation": [],
+      "surf": [],
+      "chabad": [],
+      "food": [],
+      "cafe": [
+        {
+          "name": "Capybara Cafe",
+          "lat": 5.9480,
+          "lng": 80.4710,
+          "desc": "Garden cowork, 24/7 access, bean bags + desks, private rooms."
+        },
+        {
+          "name": "Shady Lane",
+          "lat": 5.9465,
+          "lng": 80.4680,
+          "desc": "Vegetarian cafe, nomad-friendly upstairs. WiFi pw: happybanana."
+        }
+      ],
+      "beach": [
+        {
+          "name": "Mirissa Beach",
+          "lat": 5.9455,
+          "lng": 80.4710,
+          "desc": "Main beach. Whale watching boats depart from harbour nearby."
+        }
+      ],
+      "shopping": [],
+      "services": [],
+      "transport": []
+    }
   }
 };
 
@@ -747,7 +831,27 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18
 }).addTo(map);
 
-let currentLocation = Object.keys(DESTINATIONS)[0];
+// Auto-detect location by trip schedule
+const SCHEDULE = [
+  { from: '2026-02-12', to: '2026-02-15', loc: 'hikkaduwa' },
+  { from: '2026-02-15', to: '2026-02-17', loc: 'hikkaduwa' },
+  { from: '2026-02-17', to: '2026-02-20', loc: 'unawatuna' },
+  { from: '2026-02-20', to: '2026-02-23', loc: 'weligama' },
+  { from: '2026-02-23', to: '2026-02-26', loc: 'hiriketiya' },
+  { from: '2026-02-26', to: '2026-02-28', loc: 'weligama' },
+  { from: '2026-02-28', to: '2026-03-07', loc: 'midigama' },
+  { from: '2026-03-07', to: '2026-03-12', loc: 'mirissa' },
+];
+
+function getLocationByDate() {
+  const today = new Date().toISOString().slice(0, 10);
+  for (const s of SCHEDULE) {
+    if (today >= s.from && today < s.to && DESTINATIONS[s.loc]) return s.loc;
+  }
+  return Object.keys(DESTINATIONS)[0];
+}
+
+let currentLocation = getLocationByDate();
 let activeCategories = new Set(Object.keys(CATEGORIES));
 let markers = {};
 
@@ -758,6 +862,7 @@ for (const loc of Object.keys(DESTINATIONS)) {
   opt.textContent = loc.charAt(0).toUpperCase() + loc.slice(1);
   select.appendChild(opt);
 }
+select.value = currentLocation;
 select.addEventListener('change', () => {
   currentLocation = select.value;
   renderMap();
@@ -774,6 +879,26 @@ for (const [cat, info] of Object.entries(CATEGORIES)) {
   btn.addEventListener('click', () => toggleCategory(cat, btn));
   filtersEl.appendChild(btn);
 }
+
+// "All" button to reset filters
+const allBtn = document.createElement('button');
+allBtn.className = 'filter-btn';
+allBtn.style.borderColor = '#333';
+allBtn.style.backgroundColor = '#fff';
+allBtn.style.color = '#333';
+allBtn.textContent = 'All';
+allBtn.addEventListener('click', () => {
+  activeCategories = new Set(Object.keys(CATEGORIES));
+  document.querySelectorAll('.filter-btn[data-category]').forEach(b => {
+    const c = b.dataset.category;
+    b.classList.add('active');
+    b.style.backgroundColor = CATEGORIES[c].color;
+    b.style.color = '#fff';
+  });
+  updateMarkerVisibility();
+  updatePinCount();
+});
+filtersEl.appendChild(allBtn);
 
 function toggleCategory(cat, btn) {
   if (activeCategories.has(cat)) {
