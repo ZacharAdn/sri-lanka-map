@@ -55,6 +55,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 .popup-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
 .popup-cat { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 .popup-desc { color: #555; font-size: 13px; }
+.popup-dist { color: #2d8a4e; font-size: 12px; font-weight: 600; margin-top: 5px; }
 .nav-btn {
   display: inline-block; margin-top: 8px; padding: 6px 14px;
   background: #4285f4; color: #fff; border-radius: 6px;
@@ -79,21 +80,28 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 const CATEGORIES = {
   accommodation: { label: 'Stay',      color: '#2d8a4e' },
   surf:          { label: 'Surf',      color: '#0077cc' },
+  rental:        { label: 'Rental',    color: '#f39c12' },
   chabad:        { label: 'Chabad',    color: '#7b2d8e' },
   food:          { label: 'Food',      color: '#d63031' },
   cafe:          { label: 'Cafe',      color: '#e17055' },
+  cowork:        { label: 'Cowork',    color: '#00cec9' },
   beach:         { label: 'Beach',     color: '#00b894' },
   shopping:      { label: 'Shopping',  color: '#fdcb6e' },
   services:      { label: 'Services',  color: '#636e72' },
   transport:     { label: 'Transport', color: '#6c5ce7' },
 };
 
+// Accommodation coords per location (for distance calculation)
+const STAY_COORDS = {
+  hikkaduwa:  { lat: 6.1389, lng: 80.1027 },
+  unawatuna:  { lat: 6.0238, lng: 80.2464 },
+  weligama:   { lat: 5.9725, lng: 80.4253 },
+  hiriketiya: { lat: 5.9651, lng: 80.6964 },
+};
+
 const DESTINATIONS = {
   "hikkaduwa": {
-    "center": [
-      6.133,
-      80.103
-    ],
+    "center": [6.133, 80.103],
     "zoom": 14,
     "data": {
       "accommodation": [
@@ -122,6 +130,32 @@ const DESTINATIONS = {
           "lat": 6.144,
           "lng": 80.097,
           "desc": "Left-dominant reef. Quality long lefts, intermediate+. Near harbour."
+        }
+      ],
+      "rental": [
+        {
+          "name": "Narigama Beach Board Rental",
+          "lat": 6.1219,
+          "lng": 80.112,
+          "desc": "Board rental on beach. ~$11-15/day. Sand bottom warmup spot."
+        },
+        {
+          "name": "Reef End Surf School",
+          "lat": 6.125,
+          "lng": 80.108,
+          "desc": "Board rental + surf school. Est. 2004, good wave matching. Narigama area."
+        },
+        {
+          "name": "Hippie Surf School",
+          "lat": 6.126,
+          "lng": 80.1087,
+          "desc": "Board rental + 1:1 intermediate coaching. Narigama."
+        },
+        {
+          "name": "Owakanda Surf School",
+          "lat": 6.0834,
+          "lng": 80.1487,
+          "desc": "Longboard-focused rental + coaching. 567 Galle Rd, Rathgama."
         }
       ],
       "beach": [
@@ -154,6 +188,8 @@ const DESTINATIONS = {
           "desc": "Best roti in Hikkaduwa. 373 Galle-Colombo Rd."
         }
       ],
+      "cafe": [],
+      "cowork": [],
       "shopping": [
         {
           "name": "Cargills Food City Express",
@@ -182,15 +218,11 @@ const DESTINATIONS = {
           "desc": "At the point break. Longboard-focused. 567 Galle Rd, Rathgama."
         }
       ],
-      "cafe": [],
       "transport": []
     }
   },
   "unawatuna": {
-    "center": [
-      6.015,
-      80.245
-    ],
+    "center": [6.015, 80.245],
     "zoom": 15,
     "data": {
       "accommodation": [
@@ -208,6 +240,14 @@ const DESTINATIONS = {
           "lng": 80.24,
           "desc": "Reef break. Between Galle and Unawatuna, NW of main beach."
         },
+        {
+          "name": "Dewata Surf School",
+          "lat": 6.0326,
+          "lng": 80.2385,
+          "desc": "Board rental & lessons. 472/B Matara Rd, near Bonavista."
+        }
+      ],
+      "rental": [
         {
           "name": "Dewata Surf School",
           "lat": 6.0326,
@@ -269,6 +309,7 @@ const DESTINATIONS = {
           "desc": "Coffee, pastries, good WiFi. 94 Wella Dewalaya Rd."
         }
       ],
+      "cowork": [],
       "shopping": [
         {
           "name": "Cargills Food City Unawatuna",
@@ -315,10 +356,7 @@ const DESTINATIONS = {
     }
   },
   "weligama": {
-    "center": [
-      5.973,
-      80.429
-    ],
+    "center": [5.973, 80.429],
     "zoom": 15,
     "data": {
       "accommodation": [
@@ -335,6 +373,14 @@ const DESTINATIONS = {
           "lat": 5.9722,
           "lng": 80.4303,
           "desc": "Beginner paradise. Wide sandy bay, gentle waves. Cheapest board rental on coast."
+        }
+      ],
+      "rental": [
+        {
+          "name": "Weligama Bay Board Rental",
+          "lat": 5.9722,
+          "lng": 80.4303,
+          "desc": "Cheapest board rental on south coast. On the beach at Weligama Bay."
         }
       ],
       "beach": [
@@ -373,7 +419,7 @@ const DESTINATIONS = {
           "desc": "12 Buhari Masjid Rd. Spanish restaurant, next to Chabad."
         },
         {
-          "name": "Sri Lankan Organic Food Center ★",
+          "name": "Sri Lankan Organic Food Center \u2605",
           "lat": 5.9735,
           "lng": 80.4305,
           "desc": "KOSHER-FRIENDLY: Fish + veg curries only (no meat/shellfish reported). Rice & curry buffet, takeaway. Cheap, women-run. +94 78 696 1700. Call to confirm."
@@ -393,7 +439,21 @@ const DESTINATIONS = {
           "desc": "Galbokka Rd. Surf hostel with cafe/restaurant."
         },
         {
-          "name": "Layback Rooftop Cafe ★",
+          "name": "Hangten Rooftop",
+          "lat": 5.9729,
+          "lng": 80.4346,
+          "desc": "Rooftop at Hangtime Hostel. Good coffee, social events. Budget-friendly."
+        },
+        {
+          "name": "Ceylon Sliders",
+          "lat": 5.9730,
+          "lng": 80.4270,
+          "desc": "Courtyard cafe near beach. Specialty coffee, bowls, ocean view."
+        }
+      ],
+      "cowork": [
+        {
+          "name": "Layback Rooftop Cafe \u2605",
           "lat": 5.9730,
           "lng": 80.4310,
           "desc": "Rooftop cafe + AC coworking. Healthy food, smoothies, acai bowls. +94 76 630 0126"
@@ -409,18 +469,6 @@ const DESTINATIONS = {
           "lat": 5.9680,
           "lng": 80.4430,
           "desc": "Dedicated cowork + cafe. 1 Gbps fiber, backup generator. Bypass Rd."
-        },
-        {
-          "name": "Hangten Rooftop",
-          "lat": 5.9729,
-          "lng": 80.4346,
-          "desc": "Rooftop at Hangtime Hostel. Good coffee, social events. Budget-friendly."
-        },
-        {
-          "name": "Ceylon Sliders",
-          "lat": 5.9730,
-          "lng": 80.4270,
-          "desc": "Courtyard cafe near beach. Specialty coffee, bowls, ocean view."
         }
       ],
       "shopping": [
@@ -468,10 +516,7 @@ const DESTINATIONS = {
     }
   },
   "hiriketiya": {
-    "center": [
-      5.963,
-      80.705
-    ],
+    "center": [5.963, 80.705],
     "zoom": 15,
     "data": {
       "accommodation": [
@@ -512,6 +557,20 @@ const DESTINATIONS = {
           "lat": 5.9786,
           "lng": 80.7223,
           "desc": "Multiple peaks, sand. Long mellow waves, great for longboarding. 10 min tuk-tuk east."
+        }
+      ],
+      "rental": [
+        {
+          "name": "Hiriketiya Bay West \u2014 Board Rental",
+          "lat": 5.962,
+          "lng": 80.7065,
+          "desc": "Rental shacks on the beach. Beginner-friendly west end of bay."
+        },
+        {
+          "name": "Hiri Surf School",
+          "lat": 5.9624,
+          "lng": 80.707,
+          "desc": "Board rental + lessons at the bay."
         }
       ],
       "beach": [
@@ -561,7 +620,8 @@ const DESTINATIONS = {
           "desc": "Oceanfront cocktail bar + dinner. High quality food. East side of bay."
         }
       ],
-      "cafe": [
+      "cafe": [],
+      "cowork": [
         {
           "name": "Mond",
           "lat": 5.9601,
@@ -608,10 +668,7 @@ const DESTINATIONS = {
     }
   },
   "ahangama": {
-    "center": [
-      5.974,
-      80.365
-    ],
+    "center": [5.974, 80.365],
     "zoom": 14,
     "data": {
       "accommodation": [],
@@ -641,6 +698,14 @@ const DESTINATIONS = {
           "desc": "Long left point break. Advanced. Works on bigger swells. West of Kabalana."
         }
       ],
+      "rental": [
+        {
+          "name": "Kabalana Beach Board Rental",
+          "lat": 5.9776,
+          "lng": 80.349,
+          "desc": "Board rental on beach next to The Rock. Beginner-intermediate."
+        }
+      ],
       "beach": [
         {
           "name": "Kabalana Beach",
@@ -660,28 +725,30 @@ const DESTINATIONS = {
       ],
       "cafe": [
         {
-          "name": "Focus Hub Coworking & Cafe",
-          "lat": 5.9716,
-          "lng": 80.3655,
-          "desc": "Coworking + cafe. Good WiFi, AC rooms. Ahangama main road."
-        },
-        {
           "name": "Cafe Ceylon",
           "lat": 5.9782,
           "lng": 80.3485,
           "desc": "Coffee + food near Kabalana. Popular with surfers."
+        }
+      ],
+      "cowork": [
+        {
+          "name": "Focus Hub Coworking & Cafe",
+          "lat": 5.9716,
+          "lng": 80.3655,
+          "desc": "Coworking + cafe. Good WiFi, AC rooms. Solar panels. 2,000 LKR/day. Ahangama main road."
         },
         {
           "name": "NETS Cowork",
           "lat": 5.9719,
           "lng": 80.3717,
-          "desc": "Coworking space. High-speed WiFi, standing desks. East of Ahangama."
+          "desc": "Coworking space. High-speed WiFi, standing desks, solar backup. 24hr access. Pool + garden."
         },
         {
           "name": "Zippi Cafe",
           "lat": 5.9700,
           "lng": 80.3640,
-          "desc": "Specialty coffee, matcha, focaccia sandwiches. Cowork-friendly."
+          "desc": "Specialty coffee, matcha, focaccia sandwiches. Cowork-friendly. 2 min from beach."
         }
       ],
       "shopping": [
@@ -704,10 +771,7 @@ const DESTINATIONS = {
     }
   },
   "midigama": {
-    "center": [
-      5.962,
-      80.393
-    ],
+    "center": [5.962, 80.393],
     "zoom": 15,
     "data": {
       "accommodation": [],
@@ -731,6 +795,20 @@ const DESTINATIONS = {
           "desc": "Right-hand reef break. Intermediate. East of Midigama, consistent."
         }
       ],
+      "rental": [
+        {
+          "name": "Surfing Wombats",
+          "lat": 5.9664,
+          "lng": 80.3918,
+          "desc": "Board rental + surf school. Lessons for all levels."
+        },
+        {
+          "name": "Cheeky Monkey Surf",
+          "lat": 5.9621,
+          "lng": 80.3964,
+          "desc": "Longboard coaching + board rental."
+        }
+      ],
       "beach": [
         {
           "name": "Midigama Beach",
@@ -750,16 +828,18 @@ const DESTINATIONS = {
       ],
       "cafe": [
         {
-          "name": "Surfescape Midigama",
-          "lat": 5.9650,
-          "lng": 80.3910,
-          "desc": "Beachfront cafe + cowork. Fiber WiFi, AC. Healthy food. $5-10/day pass."
-        },
-        {
           "name": "Ram's Surfing Beach Cafe",
           "lat": 5.9648,
           "lng": 80.3895,
           "desc": "Local beachfront cafe near Ram's break. Surfer crowd, simple food."
+        }
+      ],
+      "cowork": [
+        {
+          "name": "Surfescape Midigama",
+          "lat": 5.9650,
+          "lng": 80.3910,
+          "desc": "Beachfront cafe + cowork. Fiber WiFi, AC. Healthy food. $5-10/day pass."
         }
       ],
       "shopping": [],
@@ -793,20 +873,22 @@ const DESTINATIONS = {
     "data": {
       "accommodation": [],
       "surf": [],
+      "rental": [],
       "chabad": [],
       "food": [],
-      "cafe": [
+      "cafe": [],
+      "cowork": [
         {
           "name": "Capybara Cafe",
           "lat": 5.9480,
           "lng": 80.4710,
-          "desc": "Garden cowork, 24/7 access, bean bags + desks, private rooms."
+          "desc": "Garden cowork, 24/7 access, bean bags + desks, private rooms. Live music 6:30pm."
         },
         {
           "name": "Shady Lane",
           "lat": 5.9465,
           "lng": 80.4680,
-          "desc": "Vegetarian cafe, nomad-friendly upstairs. WiFi pw: happybanana."
+          "desc": "Vegetarian cafe, nomad-friendly upstairs. 8am-4pm. Cash only."
         }
       ],
       "beach": [
@@ -869,6 +951,27 @@ select.addEventListener('change', () => {
 });
 
 const filtersEl = document.getElementById('filters');
+
+// "None" button — clears all filters
+const noneBtn = document.createElement('button');
+noneBtn.className = 'filter-btn';
+noneBtn.style.borderColor = '#999';
+noneBtn.style.backgroundColor = '#fff';
+noneBtn.style.color = '#666';
+noneBtn.textContent = 'None';
+noneBtn.addEventListener('click', () => {
+  activeCategories = new Set();
+  document.querySelectorAll('.filter-btn[data-category]').forEach(b => {
+    const c = b.dataset.category;
+    b.classList.remove('active');
+    b.style.backgroundColor = '#fff';
+    b.style.color = CATEGORIES[c].color;
+  });
+  updateMarkerVisibility();
+  updatePinCount();
+});
+filtersEl.appendChild(noneBtn);
+
 for (const [cat, info] of Object.entries(CATEGORIES)) {
   const btn = document.createElement('button');
   btn.className = 'filter-btn active';
@@ -916,7 +1019,26 @@ function toggleCategory(cat, btn) {
   updatePinCount();
 }
 
-function createMarker(place, cat) {
+// Haversine distance calculation
+function haversineMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatDistance(meters) {
+  if (meters < 100) return 'at your stay';
+  if (meters < 1000) return `~${Math.round(meters / 50) * 50}m from stay`;
+  const km = (meters / 1000).toFixed(1);
+  const walkMin = Math.round(meters / 80);
+  return `~${km}km (~${walkMin} min walk)`;
+}
+
+function createMarker(place, cat, locKey) {
   const color = CATEGORIES[cat].color;
   const marker = L.circleMarker([place.lat, place.lng], {
     radius: 10,
@@ -926,11 +1048,20 @@ function createMarker(place, cat) {
     opacity: 1,
     fillOpacity: 0.9
   });
+
+  let distanceHtml = '';
+  const stay = STAY_COORDS[locKey];
+  if (stay && cat !== 'accommodation') {
+    const meters = haversineMeters(stay.lat, stay.lng, place.lat, place.lng);
+    distanceHtml = `<div class="popup-dist">${formatDistance(meters)}</div>`;
+  }
+
   const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
   marker.bindPopup(
     `<div class="popup-name">${place.name}</div>` +
     `<div class="popup-cat" style="color:${color}">${CATEGORIES[cat].label}</div>` +
     (place.desc ? `<div class="popup-desc">${place.desc}</div>` : '') +
+    distanceHtml +
     `<a class="nav-btn" href="${navUrl}" target="_blank">Navigate</a>`
   );
   return marker;
@@ -948,7 +1079,7 @@ function renderMap() {
   for (const [cat, places] of Object.entries(dest.data)) {
     markers[cat] = [];
     for (const place of places) {
-      const m = createMarker(place, cat);
+      const m = createMarker(place, cat, currentLocation);
       markers[cat].push(m);
       if (activeCategories.has(cat)) {
         m.addTo(map);
