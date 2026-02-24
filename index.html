@@ -82,8 +82,8 @@ const CATEGORIES = {
   surf:          { label: 'Surf',      color: '#0077cc' },
   rental:        { label: 'Rental',    color: '#f39c12' },
   chabad:        { label: 'Chabad',    color: '#7b2d8e' },
-  food:          { label: 'Food',      color: '#d63031' },
-  cafe:          { label: 'Cafe',      color: '#e17055' },
+  kosher:        { label: 'Kosher',    color: '#d63031' },
+  fishmarket:    { label: 'Fish Mkt',  color: '#0a3d62' },
   cowork:        { label: 'Cowork',    color: '#00cec9' },
   beach:         { label: 'Beach',     color: '#00b894' },
   shopping:      { label: 'Shopping',  color: '#fdcb6e' },
@@ -91,7 +91,6 @@ const CATEGORIES = {
   transport:     { label: 'Transport', color: '#6c5ce7' },
 };
 
-// Accommodation coords per location (for distance calculation)
 const STAY_COORDS = {
   hikkaduwa:  { lat: 6.1389, lng: 80.1027 },
   unawatuna:  { lat: 6.0238, lng: 80.2464 },
@@ -105,118 +104,59 @@ const DESTINATIONS = {
     "zoom": 14,
     "data": {
       "accommodation": [
-        {
-          "name": "Home Away Guesthouse",
-          "lat": 6.1389,
-          "lng": 80.1027,
-          "desc": "Feb 15-17. $17.50/night. Quiet jungle vibe, good kitchen. Amarasena Mawatha."
-        }
+        { "name": "Home Away Guesthouse", "lat": 6.1389, "lng": 80.1027,
+          "desc": "Feb 15-17. $17.50/night. Quiet jungle vibe, good kitchen. Amarasena Mawatha." }
       ],
       "surf": [
-        {
-          "name": "Owakanda Point",
-          "lat": 6.0816,
-          "lng": 80.1478,
-          "desc": "#1 \u2014 mellow lefts, longboard, deep reef. 20 min tuk-tuk south."
-        },
-        {
-          "name": "Narigama Beach (Surf)",
-          "lat": 6.1219,
-          "lng": 80.112,
-          "desc": "Sand bottom, warmup sessions. Board rental on beach ~$11-15."
-        },
-        {
-          "name": "North Jetty",
-          "lat": 6.144,
-          "lng": 80.097,
-          "desc": "Left-dominant reef. Quality long lefts, intermediate+. Near harbour."
-        }
+        { "name": "Owakanda Point", "lat": 6.0816, "lng": 80.1478,
+          "desc": "#1 \u2014 mellow lefts, longboard, deep reef. 20 min tuk-tuk south." },
+        { "name": "Narigama Beach (Surf)", "lat": 6.1219, "lng": 80.112,
+          "desc": "Sand bottom, warmup sessions. Board rental on beach ~$11-15." },
+        { "name": "North Jetty", "lat": 6.144, "lng": 80.097,
+          "desc": "Left-dominant reef. Quality long lefts, intermediate+. Near harbour." }
       ],
       "rental": [
-        {
-          "name": "Narigama Beach Board Rental",
-          "lat": 6.1219,
-          "lng": 80.112,
-          "desc": "Board rental on beach. ~$11-15/day. Sand bottom warmup spot."
-        },
-        {
-          "name": "Reef End Surf School",
-          "lat": 6.125,
-          "lng": 80.108,
-          "desc": "Board rental + surf school. Est. 2004, good wave matching. Narigama area."
-        },
-        {
-          "name": "Hippie Surf School",
-          "lat": 6.126,
-          "lng": 80.1087,
-          "desc": "Board rental + 1:1 intermediate coaching. Narigama."
-        },
-        {
-          "name": "Owakanda Surf School",
-          "lat": 6.0834,
-          "lng": 80.1487,
-          "desc": "Longboard-focused rental + coaching. 567 Galle Rd, Rathgama."
-        }
+        { "name": "Narigama Beach Board Rental", "lat": 6.1219, "lng": 80.112,
+          "desc": "Board rental on beach. ~$11-15/day. Sand bottom warmup spot." },
+        { "name": "Reef End Surf School", "lat": 6.125, "lng": 80.108,
+          "desc": "Board rental + surf school. Est. 2004, good wave matching. Narigama area." },
+        { "name": "Hippie Surf School", "lat": 6.126, "lng": 80.1087,
+          "desc": "Board rental + 1:1 intermediate coaching. Narigama." },
+        { "name": "Owakanda Surf School", "lat": 6.0834, "lng": 80.1487,
+          "desc": "Longboard-focused rental + coaching. 567 Galle Rd, Rathgama." }
       ],
       "beach": [
-        {
-          "name": "Coral Sanctuary / Hikkaduwa Reef",
-          "lat": 6.1351,
-          "lng": 80.0995,
-          "desc": "Snorkeling spot. Glass-bottom boats, coral, sea turtles."
-        }
+        { "name": "Coral Sanctuary / Hikkaduwa Reef", "lat": 6.1351, "lng": 80.0995,
+          "desc": "Snorkeling spot. Glass-bottom boats, coral, sea turtles." }
       ],
       "chabad": [
-        {
-          "name": "Chabad Hikkaduwa",
-          "lat": 6.1289,
-          "lng": 80.1039,
-          "desc": "397 Galle Rd. +94 76 883 3653. Status uncertain for 2026."
-        }
+        { "name": "Chabad Hikkaduwa", "lat": 6.1289, "lng": 80.1039,
+          "desc": "397 Galle Rd. +94 76 883 3653. Status uncertain for 2026." }
       ],
-      "food": [
-        {
-          "name": "Ranjith Cafe",
-          "lat": 6.1229,
-          "lng": 80.1129,
-          "desc": "Local food, cheap rice & curry. Galle Rd, Thiranagama."
-        },
-        {
-          "name": "No.1 Roti Restaurant",
-          "lat": 6.1297,
-          "lng": 80.1032,
-          "desc": "Best roti in Hikkaduwa. 373 Galle-Colombo Rd."
-        }
+      "kosher": [],
+      "fishmarket": [
+        { "name": "Hikkaduwa Fish Market", "lat": 6.1440, "lng": 80.0970,
+          "desc": "At the fishing harbour. Fresh tuna, dorado. Go early AM (6-7). 100 LKR entry. Can have fish cooked on-site." }
       ],
-      "cafe": [],
-      "cowork": [],
+      "cowork": [
+        { "name": "The Eight Hikkaduwa", "lat": 6.125, "lng": 80.110,
+          "desc": "Coliving + coworking. 300 Mbps. Oceanfront. the8hikkaduwa.com" },
+        { "name": "Salty Swamis", "lat": 6.122, "lng": 80.112,
+          "desc": "Cafe + surf shop. 4.8/5 (655 reviews). Indoor AC, ocean view. 542 Galle Rd. 8AM-4PM. +94 77 832 6302" },
+        { "name": "Saffron Robes Coffee", "lat": 6.133, "lng": 80.103,
+          "desc": "Rooftop cafe, sea views. 4.9/5. Good WiFi." }
+      ],
       "shopping": [
-        {
-          "name": "Cargills Food City Express",
-          "lat": 6.1432,
-          "lng": 80.0997,
-          "desc": "162 Galle Rd. Main supermarket."
-        }
+        { "name": "Cargills Food City Express", "lat": 6.1432, "lng": 80.0997,
+          "desc": "162 Galle Rd. Main supermarket." }
       ],
       "services": [
-        {
-          "name": "Reef End Surf School",
-          "lat": 6.125,
-          "lng": 80.108,
-          "desc": "Est. 2004, good wave matching. Narigama area."
-        },
-        {
-          "name": "Hippie Surf School",
-          "lat": 6.126,
-          "lng": 80.1087,
-          "desc": "1:1 intermediate coaching. Narigama."
-        },
-        {
-          "name": "Owakanda Surf School",
-          "lat": 6.0834,
-          "lng": 80.1487,
-          "desc": "At the point break. Longboard-focused. 567 Galle Rd, Rathgama."
-        }
+        { "name": "Reef End Surf School", "lat": 6.125, "lng": 80.108,
+          "desc": "Est. 2004, good wave matching. Narigama area." },
+        { "name": "Hippie Surf School", "lat": 6.126, "lng": 80.1087,
+          "desc": "1:1 intermediate coaching. Narigama." },
+        { "name": "Owakanda Surf School", "lat": 6.0834, "lng": 80.1487,
+          "desc": "At the point break. Longboard-focused. 567 Galle Rd, Rathgama." }
       ],
       "transport": []
     }
@@ -226,133 +166,57 @@ const DESTINATIONS = {
     "zoom": 15,
     "data": {
       "accommodation": [
-        {
-          "name": "Sea & Greens Apartments (BOOKED)",
-          "lat": 6.0238,
-          "lng": 80.2464,
-          "desc": "Feb 17-20. ~$26/night. 9.7/10. 260A Ranaviru Priyadarshana Mawatha."
-        }
+        { "name": "Sea & Greens Apartments (BOOKED)", "lat": 6.0238, "lng": 80.2464,
+          "desc": "Feb 17-20. ~$26/night. 9.7/10. 260A Ranaviru Priyadarshana Mawatha." }
       ],
       "surf": [
-        {
-          "name": "Bonavista Beach (Surf Spot)",
-          "lat": 6.0308,
-          "lng": 80.24,
-          "desc": "Reef break. Between Galle and Unawatuna, NW of main beach."
-        },
-        {
-          "name": "Dewata Surf School",
-          "lat": 6.0326,
-          "lng": 80.2385,
-          "desc": "Board rental & lessons. 472/B Matara Rd, near Bonavista."
-        }
+        { "name": "Bonavista Beach (Surf Spot)", "lat": 6.0308, "lng": 80.24,
+          "desc": "Reef break. Between Galle and Unawatuna, NW of main beach." },
+        { "name": "Dewata Surf School", "lat": 6.0326, "lng": 80.2385,
+          "desc": "Board rental & lessons. 472/B Matara Rd, near Bonavista." }
       ],
       "rental": [
-        {
-          "name": "Dewata Surf School",
-          "lat": 6.0326,
-          "lng": 80.2385,
-          "desc": "Board rental & lessons. 472/B Matara Rd, near Bonavista."
-        }
+        { "name": "Dewata Surf School", "lat": 6.0326, "lng": 80.2385,
+          "desc": "Board rental & lessons. 472/B Matara Rd, near Bonavista." }
       ],
       "beach": [
-        {
-          "name": "Unawatuna Beach",
-          "lat": 6.0097,
-          "lng": 80.2484,
-          "desc": "Main beach. Sheltered bay, calm, good swimming."
-        },
-        {
-          "name": "Jungle Beach",
-          "lat": 6.0173,
-          "lng": 80.2375,
-          "desc": "Small hidden beach. 15 min walk through forest from Unawatuna."
-        }
+        { "name": "Unawatuna Beach", "lat": 6.0097, "lng": 80.2484,
+          "desc": "Main beach. Sheltered bay, calm, good swimming." },
+        { "name": "Jungle Beach", "lat": 6.0173, "lng": 80.2375,
+          "desc": "Small hidden beach. 15 min walk through forest from Unawatuna." }
       ],
-      "food": [
-        {
-          "name": "Bedspace Kitchen",
-          "lat": 6.0125,
-          "lng": 80.2492,
-          "desc": "Cafe with good food, popular with travelers."
-        },
-        {
-          "name": "Lucky Tuna",
-          "lat": 6.0098,
-          "lng": 80.2482,
-          "desc": "Seafood, grilled fish. Welle Dewalaya Road."
-        },
-        {
-          "name": "Kingfisher Restaurant",
-          "lat": 6.0086,
-          "lng": 80.2442,
-          "desc": "Sri Lankan & Western. Basigewatta Devala Rd, on the beach."
-        },
-        {
-          "name": "Happy Banana",
-          "lat": 6.0097,
-          "lng": 80.2481,
-          "desc": "Budget rice & curry, local favorite. Wallaye Deywala Road."
-        },
-        {
-          "name": "Wijaya Beach Restaurant",
-          "lat": 6.0001,
-          "lng": 80.2633,
-          "desc": "Beach restaurant, grilled seafood. Dalawella, further east."
-        }
+      "chabad": [],
+      "kosher": [],
+      "fishmarket": [
+        { "name": "Galle Fish Market", "lat": 6.0346, "lng": 80.2168,
+          "desc": "Near Galle Fort harbour. Fresh tuna, swordfish, snapper. Open 9AM-9PM, go early AM for best catch." }
       ],
-      "cafe": [
-        {
-          "name": "South Ceylon Bakery & Cafe",
-          "lat": 6.0142,
-          "lng": 80.2494,
-          "desc": "Coffee, pastries, good WiFi. 94 Wella Dewalaya Rd."
-        }
+      "cowork": [
+        { "name": "South Ceylon Bakery & Cafe", "lat": 6.0142, "lng": 80.2494,
+          "desc": "Coffee, pastries, good WiFi. 94 Wella Dewalaya Rd." },
+        { "name": "Cafe Aroma Unawatuna", "lat": 6.019, "lng": 80.248,
+          "desc": "AC, relaxing, laptop-friendly. 4.4/5. 202 Matara Rd." },
+        { "name": "Wild and the Sage", "lat": 6.012, "lng": 80.249,
+          "desc": "Bookstore-cafe, quiet and cozy. 4.8/5. Good for focused work." }
       ],
-      "cowork": [],
       "shopping": [
-        {
-          "name": "Cargills Food City Unawatuna",
-          "lat": 6.0202,
-          "lng": 80.2478,
-          "desc": "Main supermarket. Near Unawatuna Junction on Matara Rd."
-        },
-        {
-          "name": "Unawatuna Fruit & Veg Stalls",
-          "lat": 6.02,
-          "lng": 80.2478,
-          "desc": "Roadside stalls along Matara Rd. Cheap fresh produce."
-        }
+        { "name": "Cargills Food City Unawatuna", "lat": 6.0202, "lng": 80.2478,
+          "desc": "Main supermarket. Near Unawatuna Junction on Matara Rd." },
+        { "name": "Unawatuna Fruit & Veg Stalls", "lat": 6.02, "lng": 80.2478,
+          "desc": "Roadside stalls along Matara Rd. Cheap fresh produce." }
       ],
       "services": [
-        {
-          "name": "eFix Galle (Mac Repair)",
-          "lat": 6.0368,
-          "lng": 80.2178,
-          "desc": "75B Sri Hemanandha Mawatha, Bataganvila. 5.0/5. +94 77 061 2021."
-        },
-        {
-          "name": "Galle Fort (UNESCO)",
-          "lat": 6.0286,
-          "lng": 80.2168,
-          "desc": "Historic fort. Cafes, shops, sunset walk. 10 min tuk-tuk."
-        },
-        {
-          "name": "Galle Train Station",
-          "lat": 6.0346,
-          "lng": 80.2141,
-          "desc": "Main train station. Trains to Colombo, Matara, Weligama."
-        }
+        { "name": "eFix Galle (Mac Repair)", "lat": 6.0368, "lng": 80.2178,
+          "desc": "75B Sri Hemanandha Mawatha, Bataganvila. 5.0/5. +94 77 061 2021." },
+        { "name": "Galle Fort (UNESCO)", "lat": 6.0286, "lng": 80.2168,
+          "desc": "Historic fort. Cafes, shops, sunset walk. 10 min tuk-tuk." },
+        { "name": "Galle Train Station", "lat": 6.0346, "lng": 80.2141,
+          "desc": "Main train station. Trains to Colombo, Matara, Weligama." }
       ],
       "transport": [
-        {
-          "name": "Unawatuna Junction (Bus)",
-          "lat": 6.0202,
-          "lng": 80.2478,
-          "desc": "Bus stop on Matara Rd. Buses to Galle, Weligama, Matara."
-        }
-      ],
-      "chabad": []
+        { "name": "Unawatuna Junction (Bus)", "lat": 6.0202, "lng": 80.2478,
+          "desc": "Bus stop on Matara Rd. Buses to Galle, Weligama, Matara." }
+      ]
     }
   },
   "weligama": {
@@ -360,158 +224,74 @@ const DESTINATIONS = {
     "zoom": 15,
     "data": {
       "accommodation": [
-        {
-          "name": "Sana Guest (BOOKED)",
-          "lat": 5.9725,
-          "lng": 80.4253,
-          "desc": "Feb 20-22. $37/night. 4.9/5. Full kitchen, WiFi, balcony. 8-12 min walk to Chabad."
-        }
+        { "name": "Sana Guest (BOOKED)", "lat": 5.9725, "lng": 80.4253,
+          "desc": "Feb 20-22 + Feb 26-28. Full kitchen, WiFi, balcony. 8-12 min walk to Chabad." }
       ],
       "surf": [
-        {
-          "name": "Weligama Bay (Longboard)",
-          "lat": 5.9722,
-          "lng": 80.4303,
-          "desc": "Beginner paradise. Wide sandy bay, gentle waves. Cheapest board rental on coast."
-        }
+        { "name": "Weligama Bay (Longboard)", "lat": 5.9722, "lng": 80.4303,
+          "desc": "Beginner paradise. Wide sandy bay, gentle waves. Cheapest board rental on coast." }
       ],
       "rental": [
-        {
-          "name": "Weligama Bay Board Rental",
-          "lat": 5.9722,
-          "lng": 80.4303,
-          "desc": "Cheapest board rental on south coast. On the beach at Weligama Bay."
-        }
+        { "name": "Weligama Bay Board Rental", "lat": 5.9722, "lng": 80.4303,
+          "desc": "Cheapest board rental on south coast. On the beach at Weligama Bay." }
       ],
       "beach": [
-        {
-          "name": "Weligama Beach",
-          "lat": 5.9719,
-          "lng": 80.4312,
-          "desc": "Main beach. Long sandy stretch, calm."
-        },
-        {
-          "name": "Taprobane Island",
-          "lat": 5.9678,
-          "lng": 80.4256,
-          "desc": "Iconic tiny island in the bay. Photo spot."
-        }
+        { "name": "Weligama Beach", "lat": 5.9719, "lng": 80.4312,
+          "desc": "Main beach. Long sandy stretch, calm." },
+        { "name": "Taprobane Island", "lat": 5.9678, "lng": 80.4256,
+          "desc": "Iconic tiny island in the bay. Photo spot." }
       ],
       "chabad": [
-        {
-          "name": "Chabad Weligama + Kosher Restaurant",
-          "lat": 5.9742,
-          "lng": 80.4323,
-          "desc": "17 Buhari Masjid Rd. Rabbi Yossi Romach. +94 74 360 0652. Only kosher restaurant on south coast."
-        }
+        { "name": "Chabad Weligama + Kosher Restaurant", "lat": 5.9742, "lng": 80.4323,
+          "desc": "17 Buhari Masjid Rd. Rabbi Yossi Romach. +94 74 360 0652. Only fully kosher restaurant on south coast." }
       ],
-      "food": [
-        {
-          "name": "Weligama Fish Market",
-          "lat": 5.9719,
-          "lng": 80.4282,
-          "desc": "Fresh catch. Go early morning. Bypass Beach Road."
-        },
-        {
-          "name": "Alkimia / La Casa",
-          "lat": 5.9742,
-          "lng": 80.4326,
-          "desc": "12 Buhari Masjid Rd. Spanish restaurant, next to Chabad."
-        },
-        {
-          "name": "Sri Lankan Organic Food Center \u2605",
-          "lat": 5.9735,
-          "lng": 80.4305,
-          "desc": "KOSHER-FRIENDLY: Fish + veg curries only (no meat/shellfish reported). Rice & curry buffet, takeaway. Cheap, women-run. +94 78 696 1700. Call to confirm."
-        },
-        {
-          "name": "Welle Gedara (Fully Vegan)",
-          "lat": 5.9649,
-          "lng": 80.4214,
-          "desc": "FULLY VEGAN: Sri Lankan rice & curry, jackfruit wraps. Kaparatota. 15 min walk from Sana Guest. +94 71 312 3148. Also cooking classes."
-        }
+      "kosher": [
+        { "name": "Welle Gedara (Fully Vegan) \u2605", "lat": 5.9649, "lng": 80.4214,
+          "desc": "VEG: 100% vegan Sri Lankan. Rice & curry, jackfruit wraps. Cooking classes. Kaparatota. +94 71 312 3148" },
+        { "name": "No Fish Today \u2605", "lat": 5.974, "lng": 80.429,
+          "desc": "VEG: 100% vegan cafe. Falafel bowls, vegan burgers, tacos, smoothie bowls. Also surf shop + bar. 13 Beach Rd." },
+        { "name": "After Surf Cafe (Lucky's)", "lat": 5.972, "lng": 80.427,
+          "desc": "FISH: Fish burger (cajun, mango salsa) + tuna burger (grilled yellowfin). Western-style. Rooftop, bay views. Also has chicken (skip)." }
       ],
-      "cafe": [
-        {
-          "name": "Dreamy Surf House",
-          "lat": 5.9742,
-          "lng": 80.4326,
-          "desc": "Galbokka Rd. Surf hostel with cafe/restaurant."
-        },
-        {
-          "name": "Hangten Rooftop",
-          "lat": 5.9729,
-          "lng": 80.4346,
-          "desc": "Rooftop at Hangtime Hostel. Good coffee, social events. Budget-friendly."
-        },
-        {
-          "name": "Ceylon Sliders",
-          "lat": 5.9730,
-          "lng": 80.4270,
-          "desc": "Courtyard cafe near beach. Specialty coffee, bowls, ocean view."
-        }
+      "fishmarket": [
+        { "name": "Weligama Fish Market", "lat": 5.9719, "lng": 80.4282,
+          "desc": "Fresh tuna, snapper, seer fish. Go early AM (6-8). Bypass Beach Road, at the harbour." }
       ],
       "cowork": [
-        {
-          "name": "Layback Rooftop Cafe \u2605",
-          "lat": 5.9730,
-          "lng": 80.4310,
-          "desc": "Rooftop cafe + AC coworking. Healthy food, smoothies, acai bowls. +94 76 630 0126"
-        },
-        {
-          "name": "NOMAD Cafe",
-          "lat": 5.9741,
-          "lng": 80.4378,
-          "desc": "#1 nomad cafe. Plant-forward food, reliable WiFi, many sockets. 640 Matara Rd."
-        },
-        {
-          "name": "Plan B Coworking",
-          "lat": 5.9680,
-          "lng": 80.4430,
-          "desc": "Dedicated cowork + cafe. 1 Gbps fiber, backup generator. Bypass Rd."
-        }
+        { "name": "Layback Rooftop Cafe \u2605", "lat": 5.9730, "lng": 80.4310,
+          "desc": "Rooftop cafe + AC coworking. 4.8/5 (506). Healthy food, smoothies. 8AM-5PM. +94 76 630 0126" },
+        { "name": "NOMAD Cafe", "lat": 5.9741, "lng": 80.4378,
+          "desc": "#1 nomad cafe. 4.7/5 (1553). Plant-forward food, reliable WiFi, many sockets. 640 Matara Rd." },
+        { "name": "Plan B Coworking", "lat": 5.9680, "lng": 80.4430,
+          "desc": "Dedicated cowork. 4.9/5 (3824). 1 Gbps fiber, AC, backup generator. 24/7. Bypass Rd." },
+        { "name": "Ceylon Sliders", "lat": 5.9730, "lng": 80.4270,
+          "desc": "Beachfront cafe. Fiber WiFi. Specialty coffee, bowls, ocean view. Rooftop bar." },
+        { "name": "Pasijou Coworking & Food", "lat": 5.973, "lng": 80.429,
+          "desc": "Garden coworking + cafe. 30 Mbps + backup power. 10AM-10PM. 15 Matara Rd. +94 78 825 1707" },
+        { "name": "Outpost Weligama", "lat": 5.971, "lng": 80.427,
+          "desc": "Pro coworking. SLT Fiber, 2 AC rooms, standing desks, phone booths, pool. $12/day. 24/7." },
+        { "name": "Hangten Rooftop", "lat": 5.9729, "lng": 80.4346,
+          "desc": "Hostel rooftop. Good coffee, social events. Budget-friendly. WiFi available." },
+        { "name": "Moochie's", "lat": 5.974, "lng": 80.430,
+          "desc": "Quiet cafe on side street. Smoothie bowls, vegan/GF options. Good WiFi. 32 Samaraweera Pl." }
       ],
       "shopping": [
-        {
-          "name": "Cargills Food City Weligama",
-          "lat": 5.9733,
-          "lng": 80.4322,
-          "desc": "454 Old Galle Road. Main supermarket."
-        },
-        {
-          "name": "Global Food City",
-          "lat": 5.9753,
-          "lng": 80.4287,
-          "desc": "111 Vajiragnana Mawatha."
-        },
-        {
-          "name": "Sunday Market",
-          "lat": 5.973,
-          "lng": 80.427,
-          "desc": "Best prices for fresh produce. Sunday only."
-        }
+        { "name": "Cargills Food City Weligama", "lat": 5.9733, "lng": 80.4322,
+          "desc": "454 Old Galle Road. Main supermarket." },
+        { "name": "Global Food City", "lat": 5.9753, "lng": 80.4287,
+          "desc": "111 Vajiragnana Mawatha." },
+        { "name": "Sunday Market", "lat": 5.973, "lng": 80.427,
+          "desc": "Best prices for fresh produce. Sunday only." }
       ],
       "services": [
-        {
-          "name": "Weligama Railway Station",
-          "lat": 5.9757,
-          "lng": 80.4295,
-          "desc": "Coastal train line. Trains to Colombo, Galle, Matara."
-        }
+        { "name": "Weligama Railway Station", "lat": 5.9757, "lng": 80.4295,
+          "desc": "Coastal train line. Trains to Colombo, Galle, Matara." }
       ],
       "transport": [
-        {
-          "name": "Weligama Railway Station",
-          "lat": 5.9757,
-          "lng": 80.4295,
-          "desc": "Coastal train. Colombo, Galle, Matara."
-        },
-        {
-          "name": "Weligama Bus Stand",
-          "lat": 5.9735,
-          "lng": 80.4295,
-          "desc": "Main bus station."
-        }
+        { "name": "Weligama Railway Station", "lat": 5.9757, "lng": 80.4295,
+          "desc": "Coastal train. Colombo, Galle, Matara." },
+        { "name": "Weligama Bus Stand", "lat": 5.9735, "lng": 80.4295,
+          "desc": "Main bus station." }
       ]
     }
   },
@@ -520,144 +300,69 @@ const DESTINATIONS = {
     "zoom": 15,
     "data": {
       "accommodation": [
-        {
-          "name": "SurfBayVilla (BOOKED)",
-          "lat": 5.9651,
-          "lng": 80.6964,
-          "desc": "Feb 24-27. $65/night. Dickwella. AC, WiFi (SURF1111), kitchen, garden. Host: Chamila 077-2260486."
-        }
+        { "name": "SurfBayVilla (BOOKED)", "lat": 5.9651, "lng": 80.6964,
+          "desc": "Feb 23-26. Dickwella. AC, WiFi (SURF1111), kitchen, garden. Host: Chamila 077-2260486." }
       ],
       "surf": [
-        {
-          "name": "Hiriketiya Bay \u2014 West (Beginner)",
-          "lat": 5.962,
-          "lng": 80.7065,
-          "desc": "Beach break, sand bottom. Soft rolling waves. Board rental shacks here. Warmup spot."
-        },
-        {
-          "name": "Hiriketiya Bay \u2014 Middle (Intermediate)",
-          "lat": 5.9625,
-          "lng": 80.7075,
-          "desc": "A-frame peaks, left-breaking. Rock reef to sand. Your sweet spot \u2014 mellow lefts, 50m+ rides. Best at mid-tide."
-        },
-        {
-          "name": "Hiriketiya Bay \u2014 East Reef (Advanced)",
-          "lat": 5.963,
-          "lng": 80.709,
-          "desc": "Fast walling left over shallow reef. 150-350m rides. Experts only when big."
-        },
-        {
-          "name": "Dickwella Beach (Surf)",
-          "lat": 5.9668,
-          "lng": 80.695,
-          "desc": "Right-hand beach break, sand. Beginner-intermediate. Punchier than Hiri. 2 min from SurfBayVilla."
-        },
-        {
-          "name": "Kudawella Beach",
-          "lat": 5.9786,
-          "lng": 80.7223,
-          "desc": "Multiple peaks, sand. Long mellow waves, great for longboarding. 10 min tuk-tuk east."
-        }
+        { "name": "Hiriketiya Bay \u2014 West (Beginner)", "lat": 5.962, "lng": 80.7065,
+          "desc": "Beach break, sand bottom. Soft rolling waves. Board rental shacks here. Warmup spot." },
+        { "name": "Hiriketiya Bay \u2014 Middle (Intermediate)", "lat": 5.9625, "lng": 80.7075,
+          "desc": "A-frame peaks, left-breaking. Your sweet spot \u2014 mellow lefts, 50m+ rides. Best at mid-tide." },
+        { "name": "Hiriketiya Bay \u2014 East Reef (Advanced)", "lat": 5.963, "lng": 80.709,
+          "desc": "Fast walling left over shallow reef. 150-350m rides. Experts only when big." },
+        { "name": "Dickwella Beach (Surf)", "lat": 5.9668, "lng": 80.695,
+          "desc": "Right-hand beach break, sand. Beginner-intermediate. Punchier than Hiri. 2 min from SurfBayVilla." },
+        { "name": "Kudawella Beach", "lat": 5.9786, "lng": 80.7223,
+          "desc": "Multiple peaks, sand. Long mellow waves, great for longboarding. 10 min tuk-tuk east." }
       ],
       "rental": [
-        {
-          "name": "Hiriketiya Bay West \u2014 Board Rental",
-          "lat": 5.962,
-          "lng": 80.7065,
-          "desc": "Rental shacks on the beach. Beginner-friendly west end of bay."
-        },
-        {
-          "name": "Hiri Surf School",
-          "lat": 5.9624,
-          "lng": 80.707,
-          "desc": "Board rental + lessons at the bay."
-        }
+        { "name": "Hiriketiya Bay West \u2014 Board Rental", "lat": 5.962, "lng": 80.7065,
+          "desc": "Rental shacks on the beach. Beginner-friendly west end of bay." },
+        { "name": "Hiri Surf School", "lat": 5.9624, "lng": 80.707,
+          "desc": "Board rental + lessons at the bay." }
       ],
       "beach": [
-        {
-          "name": "Hiriketiya Beach",
-          "lat": 5.9622,
-          "lng": 80.7068,
-          "desc": "Beautiful horseshoe bay. Swimming, surf, chill."
-        },
-        {
-          "name": "Dickwella Beach",
-          "lat": 5.9668,
-          "lng": 80.6945,
-          "desc": "Main Dickwella beach. Surf + swimming."
-        }
+        { "name": "Hiriketiya Beach", "lat": 5.9622, "lng": 80.7068,
+          "desc": "Beautiful horseshoe bay. Swimming, surf, chill." },
+        { "name": "Dickwella Beach", "lat": 5.9668, "lng": 80.6945,
+          "desc": "Main Dickwella beach. Surf + swimming." }
       ],
       "chabad": [],
-      "food": [
-        {
-          "name": "Garlic Cafe",
-          "lat": 5.9663,
-          "lng": 80.7071,
-          "desc": "Curry buffet evenings. 500 LKR ($1.60). Cheapest meal in Hiri. Up Hiriketiya Rd."
-        },
-        {
-          "name": "Duni's Hoppers Cafe",
-          "lat": 5.963,
-          "lng": 80.7059,
-          "desc": "Veg rice & curry + dessert. 750 LKR ($2.50)."
-        },
-        {
-          "name": "Lemon Grass Cafe",
-          "lat": 5.965,
-          "lng": 80.706,
-          "desc": "Rice & curry, 4+ curries, unlimited refills, fruit dessert. 1,000 LKR ($3.30). On Hiriketiya Rd."
-        },
-        {
-          "name": "Hiriketiya Seafood Restaurant",
-          "lat": 5.9645,
-          "lng": 80.7065,
-          "desc": "Rice & curry buffet. 1,200 LKR ($4). Hiriketiya Rd."
-        },
-        {
-          "name": "Raa Hiriketiya",
-          "lat": 5.9615,
-          "lng": 80.7099,
-          "desc": "Oceanfront cocktail bar + dinner. High quality food. East side of bay."
-        }
+      "kosher": [
+        { "name": "White Peacock Vegan Cafe \u2605", "lat": 5.966, "lng": 80.707,
+          "desc": "VEG: 100% vegan. Vegan burgers, hummus, jackfruit curry, carrot cake. Next to Cinnamon 7. +94 78 419 0609" },
+        { "name": "Jackfruit Vegan Cafe \u2605", "lat": 5.966, "lng": 80.706,
+          "desc": "VEG: 100% vegan. Jackfruit burgers, Buddha bowls, chickpea curry. Hiriketiya Rd. +94 7119 799 46" },
+        { "name": "Malu Poke", "lat": 5.966, "lng": 80.705,
+          "desc": "FISH: Build-your-own poke bowls. Choose tuna + veg (skip the shrimp option). Western-style. Beachfront. 8AM-9PM." }
       ],
-      "cafe": [],
+      "fishmarket": [
+        { "name": "Dikwella Fish Market", "lat": 5.963, "lng": 80.697,
+          "desc": "Dikwella town, near harbour. Saturday is main market day. Fresh tuna, snapper, swordfish. Go 6-8 AM." },
+        { "name": "Pehambiya Fishermen (boats)", "lat": 5.964, "lng": 80.701,
+          "desc": "Buy direct from fishermen at east end of Dikwella Beach. Oru canoes return 5:30-7 AM. Cheapest fish." }
+      ],
       "cowork": [
-        {
-          "name": "Mond",
-          "lat": 5.9601,
-          "lng": 80.7051,
-          "desc": "#1 digital nomad spot. Cliff-side headland, ocean breeze. Best coffee in town. Strong WiFi."
-        },
-        {
-          "name": "Dots Bay House",
-          "lat": 5.963,
-          "lng": 80.7077,
-          "desc": "Restaurant + bar + 24/7 coworking. Desks & bean bags. Social hub of Hiri."
-        }
+        { "name": "Mond \u2605", "lat": 5.9601, "lng": 80.7051,
+          "desc": "#1 digital nomad spot. 4.5/5 (469). Cliff-side headland, ocean breeze. Best coffee. Strong WiFi." },
+        { "name": "Dots Bay House", "lat": 5.963, "lng": 80.7077,
+          "desc": "Restaurant + bar + 24/7 coworking. 4.6/5 (2131). Desks & bean bags. Social hub of Hiri." },
+        { "name": "Clics Coliving & Coworking", "lat": 5.967, "lng": 80.709,
+          "desc": "AC coworking room. 80/40 Mbps fiber. 9AM-9PM. 700m from beach. clicscoliving.com" },
+        { "name": "BUNCH", "lat": 5.967, "lng": 80.708,
+          "desc": "Trendy brunch cafe + garden. Good coffee, smoothie bowls. WiFi. Vegan/GF options." }
       ],
       "shopping": [
-        {
-          "name": "Cargills Food City Dickwella",
-          "lat": 5.9647,
-          "lng": 80.6955,
-          "desc": "52 Tangalle Rd. Main supermarket."
-        }
+        { "name": "Cargills Food City Dickwella", "lat": 5.9647, "lng": 80.6955,
+          "desc": "52 Tangalle Rd. Main supermarket." }
       ],
       "services": [
-        {
-          "name": "Hiri Surf School",
-          "lat": 5.9624,
-          "lng": 80.707,
-          "desc": "Board rental + lessons at the bay."
-        }
+        { "name": "Hiri Surf School", "lat": 5.9624, "lng": 80.707,
+          "desc": "Board rental + lessons at the bay." }
       ],
       "transport": [
-        {
-          "name": "Dickwella Bus Stand",
-          "lat": 5.966,
-          "lng": 80.696,
-          "desc": "Buses to Matara, Tangalle. Near Cargills."
-        }
+        { "name": "Dickwella Bus Stand", "lat": 5.966, "lng": 80.696,
+          "desc": "Buses to Matara, Tangalle. Near Cargills." }
       ]
     }
   },
@@ -667,100 +372,46 @@ const DESTINATIONS = {
     "data": {
       "accommodation": [],
       "surf": [
-        {
-          "name": "The Rock (Kabalana)",
-          "lat": 5.9766,
-          "lng": 80.3475,
-          "desc": "Iconic A-frame reef break. Left & right. Intermediate-advanced. Shallow reef \u2014 booties recommended."
-        },
-        {
-          "name": "Kabalana Beach Break",
-          "lat": 5.9776,
-          "lng": 80.349,
-          "desc": "Sand bottom, beginner-intermediate. Mellow waves next to The Rock. Board rental on beach."
-        },
-        {
-          "name": "Sticks (Ahangama)",
-          "lat": 5.9747,
-          "lng": 80.3544,
-          "desc": "Right-hand reef break near the stilt fishermen. Intermediate. Consistent swell magnet."
-        },
-        {
-          "name": "South Beach / Plantation Point",
-          "lat": 5.9818,
-          "lng": 80.3367,
-          "desc": "Long left point break. Advanced. Works on bigger swells. West of Kabalana."
-        }
+        { "name": "The Rock (Kabalana)", "lat": 5.9766, "lng": 80.3475,
+          "desc": "Iconic A-frame reef break. Left & right. Intermediate-advanced. Shallow reef \u2014 booties recommended." },
+        { "name": "Kabalana Beach Break", "lat": 5.9776, "lng": 80.349,
+          "desc": "Sand bottom, beginner-intermediate. Mellow waves next to The Rock. Board rental on beach." },
+        { "name": "Sticks (Ahangama)", "lat": 5.9747, "lng": 80.3544,
+          "desc": "Right-hand reef break near the stilt fishermen. Intermediate. Consistent swell magnet." },
+        { "name": "South Beach / Plantation Point", "lat": 5.9818, "lng": 80.3367,
+          "desc": "Long left point break. Advanced. Works on bigger swells. West of Kabalana." }
       ],
       "rental": [
-        {
-          "name": "Kabalana Beach Board Rental",
-          "lat": 5.9776,
-          "lng": 80.349,
-          "desc": "Board rental on beach next to The Rock. Beginner-intermediate."
-        }
+        { "name": "Kabalana Beach Board Rental", "lat": 5.9776, "lng": 80.349,
+          "desc": "Board rental on beach next to The Rock. Beginner-intermediate." }
       ],
       "beach": [
-        {
-          "name": "Kabalana Beach",
-          "lat": 5.9776,
-          "lng": 80.349,
-          "desc": "Beautiful long stretch. Surf + swimming. Stilt fishermen nearby."
-        }
+        { "name": "Kabalana Beach", "lat": 5.9776, "lng": 80.349,
+          "desc": "Beautiful long stretch. Surf + swimming. Stilt fishermen nearby." }
       ],
       "chabad": [],
-      "food": [
-        {
-          "name": "Manori's Kitchen",
-          "lat": 5.974,
-          "lng": 80.362,
-          "desc": "Local rice & curry, cheap and authentic. Ahangama village."
-        }
-      ],
-      "cafe": [
-        {
-          "name": "Cafe Ceylon",
-          "lat": 5.9782,
-          "lng": 80.3485,
-          "desc": "Coffee + food near Kabalana. Popular with surfers."
-        }
-      ],
+      "kosher": [],
+      "fishmarket": [],
       "cowork": [
-        {
-          "name": "Focus Hub Coworking & Cafe",
-          "lat": 5.9716,
-          "lng": 80.3655,
-          "desc": "Coworking + cafe. Good WiFi, AC rooms. Solar panels. 2,000 LKR/day. Ahangama main road."
-        },
-        {
-          "name": "NETS Cowork",
-          "lat": 5.9719,
-          "lng": 80.3717,
-          "desc": "Coworking space. High-speed WiFi, standing desks, solar backup. 24hr access. Pool + garden."
-        },
-        {
-          "name": "Zippi Cafe",
-          "lat": 5.9700,
-          "lng": 80.3640,
-          "desc": "Specialty coffee, matcha, focaccia sandwiches. Cowork-friendly. 2 min from beach."
-        }
+        { "name": "Focus Hub Coworking & Cafe", "lat": 5.9716, "lng": 80.3655,
+          "desc": "4.7/5 (71). Good WiFi, AC rooms. Solar panels. 2,000 LKR/day. Ahangama main road." },
+        { "name": "NETS Cowork", "lat": 5.9719, "lng": 80.3717,
+          "desc": "4.8/5 (106). High-speed WiFi, standing desks, solar backup. 24hr access. Pool + garden." },
+        { "name": "Zippi Cafe", "lat": 5.9700, "lng": 80.3640,
+          "desc": "4.8/5 (293). Specialty coffee, matcha, focaccia. Cowork-friendly. 2 min from beach." },
+        { "name": "Cafe Ceylon / Kalatmaka", "lat": 5.9782, "lng": 80.3485,
+          "desc": "Coffee + food near Kabalana. Coworking space inside (Kalatmaka, 5 EUR/day). +94 91 228 2729" },
+        { "name": "Black Honey Cafe", "lat": 5.974, "lng": 80.365,
+          "desc": "Boutique cafe in rice paddies. Pool. Skilled baristas. 8AM-4PM. Good for morning work sessions." }
       ],
       "shopping": [
-        {
-          "name": "Cargills Food City Ahangama",
-          "lat": 5.9725,
-          "lng": 80.3638,
-          "desc": "Main supermarket on Galle Road."
-        }
+        { "name": "Cargills Food City Ahangama", "lat": 5.9725, "lng": 80.3638,
+          "desc": "Main supermarket on Galle Road." }
       ],
       "services": [],
       "transport": [
-        {
-          "name": "Ahangama Railway Station",
-          "lat": 5.9732,
-          "lng": 80.3639,
-          "desc": "Coastal train line. Trains to Galle, Colombo, Weligama, Matara."
-        }
+        { "name": "Ahangama Railway Station", "lat": 5.9732, "lng": 80.3639,
+          "desc": "Coastal train line. Trains to Galle, Colombo, Weligama, Matara." }
       ]
     }
   },
@@ -770,94 +421,42 @@ const DESTINATIONS = {
     "data": {
       "accommodation": [],
       "surf": [
-        {
-          "name": "Lazy Left",
-          "lat": 5.9629,
-          "lng": 80.3907,
-          "desc": "Long mellow left point break. Beginner-intermediate. Longboard paradise. Sand to reef."
-        },
-        {
-          "name": "Rams Right",
-          "lat": 5.9629,
-          "lng": 80.394,
-          "desc": "Powerful right reef break. Intermediate-advanced. South of Lazy Left."
-        },
-        {
-          "name": "Plantations",
-          "lat": 5.9601,
-          "lng": 80.399,
-          "desc": "Right-hand reef break. Intermediate. East of Midigama, consistent."
-        }
+        { "name": "Lazy Left", "lat": 5.9629, "lng": 80.3907,
+          "desc": "Long mellow left point break. Beginner-intermediate. Longboard paradise. Sand to reef." },
+        { "name": "Rams Right", "lat": 5.9629, "lng": 80.394,
+          "desc": "Powerful right reef break. Intermediate-advanced. South of Lazy Left." },
+        { "name": "Plantations", "lat": 5.9601, "lng": 80.399,
+          "desc": "Right-hand reef break. Intermediate. East of Midigama, consistent." }
       ],
       "rental": [
-        {
-          "name": "Surfing Wombats",
-          "lat": 5.9664,
-          "lng": 80.3918,
-          "desc": "Board rental + surf school. Lessons for all levels."
-        },
-        {
-          "name": "Cheeky Monkey Surf",
-          "lat": 5.9621,
-          "lng": 80.3964,
-          "desc": "Longboard coaching + board rental."
-        }
+        { "name": "Surfing Wombats", "lat": 5.9664, "lng": 80.3918,
+          "desc": "Board rental + surf school. Lessons for all levels." },
+        { "name": "Cheeky Monkey Surf", "lat": 5.9621, "lng": 80.3964,
+          "desc": "Longboard coaching + board rental." }
       ],
       "beach": [
-        {
-          "name": "Midigama Beach",
-          "lat": 5.9629,
-          "lng": 80.391,
-          "desc": "Small beach at Lazy Left. Surf-focused, rocky sections."
-        }
+        { "name": "Midigama Beach", "lat": 5.9629, "lng": 80.391,
+          "desc": "Small beach at Lazy Left. Surf-focused, rocky sections." }
       ],
       "chabad": [],
-      "food": [
-        {
-          "name": "Wild Beach Cafe",
-          "lat": 5.9656,
-          "lng": 80.3911,
-          "desc": "Beachfront cafe/restaurant. Good food, ocean views."
-        }
-      ],
-      "cafe": [
-        {
-          "name": "Ram's Surfing Beach Cafe",
-          "lat": 5.9648,
-          "lng": 80.3895,
-          "desc": "Local beachfront cafe near Ram's break. Surfer crowd, simple food."
-        }
-      ],
+      "kosher": [],
+      "fishmarket": [],
       "cowork": [
-        {
-          "name": "Surfescape Midigama",
-          "lat": 5.9650,
-          "lng": 80.3910,
-          "desc": "Beachfront cafe + cowork. Fiber WiFi, AC. Healthy food. $5-10/day pass."
-        }
+        { "name": "Surfescape Midigama", "lat": 5.9650, "lng": 80.3910,
+          "desc": "Beachfront cafe + cowork. Fiber WiFi, AC. Healthy food. $5-10/day pass." },
+        { "name": "Ram's Surfing Beach Cafe", "lat": 5.9648, "lng": 80.3895,
+          "desc": "Local beachfront cafe near Ram's break. Surfer crowd, simple food. WiFi." }
       ],
       "shopping": [],
       "services": [
-        {
-          "name": "Surfing Wombats",
-          "lat": 5.9664,
-          "lng": 80.3918,
-          "desc": "Surf school + board rental. Lessons for all levels."
-        },
-        {
-          "name": "Cheeky Monkey Surf",
-          "lat": 5.9621,
-          "lng": 80.3964,
-          "desc": "Surf school. Longboard coaching, board rental."
-        }
+        { "name": "Surfing Wombats", "lat": 5.9664, "lng": 80.3918,
+          "desc": "Surf school + board rental. Lessons for all levels." },
+        { "name": "Cheeky Monkey Surf", "lat": 5.9621, "lng": 80.3964,
+          "desc": "Surf school. Longboard coaching, board rental." }
       ],
       "transport": [
-        {
-          "name": "Midigama Railway Station",
-          "lat": 5.9647,
-          "lng": 80.393,
-          "desc": "Small station on coastal line. Trains to Galle, Weligama."
-        }
+        { "name": "Midigama Railway Station", "lat": 5.9647, "lng": 80.393,
+          "desc": "Small station on coastal line. Trains to Galle, Weligama." }
       ]
     }
   },
@@ -869,29 +468,27 @@ const DESTINATIONS = {
       "surf": [],
       "rental": [],
       "chabad": [],
-      "food": [],
-      "cafe": [],
+      "kosher": [
+        { "name": "The Slow \u2605", "lat": 5.945, "lng": 80.472,
+          "desc": "VEG: 100% vegan restaurant + design hotel. On the beach. 8AM-10PM daily. slow-vegan-sri-lanka.com" },
+        { "name": "Hey Mama Mirissa \u2605", "lat": 5.947, "lng": 80.470,
+          "desc": "VEG: Fully vegan/vegetarian cafe, family-owned. 8AM-9:30PM. +94 76 403 3874" }
+      ],
+      "fishmarket": [
+        { "name": "Mirissa Fisheries Harbour", "lat": 5.944, "lng": 80.474,
+          "desc": "Dawn fish auction 5:30-8 AM. Mackerel, skipjack tuna. Retail section, filleted on-site. Also whale watching departure." }
+      ],
       "cowork": [
-        {
-          "name": "Capybara Cafe",
-          "lat": 5.9480,
-          "lng": 80.4710,
-          "desc": "Garden cowork, 24/7 access, bean bags + desks, private rooms. Live music 6:30pm."
-        },
-        {
-          "name": "Shady Lane",
-          "lat": 5.9465,
-          "lng": 80.4680,
-          "desc": "Vegetarian cafe, nomad-friendly upstairs. 8am-4pm. Cash only."
-        }
+        { "name": "Capybara Cafe", "lat": 5.9480, "lng": 80.4710,
+          "desc": "4.8/5 (1353). Garden cowork, 24/7 access, bean bags + desks, private rooms." },
+        { "name": "Shady Lane", "lat": 5.9465, "lng": 80.4680,
+          "desc": "4.7/5 (2579). Vegetarian cafe, nomad-friendly upstairs. 8AM-4PM. Cash only." },
+        { "name": "Second Home", "lat": 5.948, "lng": 80.470,
+          "desc": "Newest coworking in Mirissa. Inside The Hostel Mirissa. secondhome.lk" }
       ],
       "beach": [
-        {
-          "name": "Mirissa Beach",
-          "lat": 5.9455,
-          "lng": 80.4710,
-          "desc": "Main beach. Whale watching boats depart from harbour nearby."
-        }
+        { "name": "Mirissa Beach", "lat": 5.9455, "lng": 80.4710,
+          "desc": "Main beach. Whale watching boats depart from harbour nearby." }
       ],
       "shopping": [],
       "services": [],
@@ -907,7 +504,6 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 18
 }).addTo(map);
 
-// Auto-detect location by trip schedule
 const SCHEDULE = [
   { from: '2026-02-12', to: '2026-02-15', loc: 'hikkaduwa' },
   { from: '2026-02-15', to: '2026-02-17', loc: 'hikkaduwa' },
@@ -946,7 +542,6 @@ select.addEventListener('change', () => {
 
 const filtersEl = document.getElementById('filters');
 
-// "None" button — clears all filters
 const noneBtn = document.createElement('button');
 noneBtn.className = 'filter-btn';
 noneBtn.style.borderColor = '#999';
@@ -977,7 +572,6 @@ for (const [cat, info] of Object.entries(CATEGORIES)) {
   filtersEl.appendChild(btn);
 }
 
-// "All" button to reset filters
 const allBtn = document.createElement('button');
 allBtn.className = 'filter-btn';
 allBtn.style.borderColor = '#333';
@@ -1013,7 +607,6 @@ function toggleCategory(cat, btn) {
   updatePinCount();
 }
 
-// Haversine distance calculation
 function haversineMeters(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
