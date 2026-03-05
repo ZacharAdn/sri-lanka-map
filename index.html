@@ -56,10 +56,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 .popup-cat { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
 .popup-desc { color: #555; font-size: 13px; }
 .popup-dist { color: #2d8a4e; font-size: 12px; font-weight: 600; margin-top: 5px; }
+.popup-btns { display: flex; gap: 6px; margin-top: 8px; }
 .nav-btn {
-  display: inline-block; margin-top: 8px; padding: 6px 14px;
-  background: #4285f4; color: #fff; border-radius: 6px;
-  text-decoration: none; font-size: 13px; font-weight: 600;
+  flex: 1; text-align: center; padding: 8px; background: #4285f4; color: #fff;
+  border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;
+}
+.copy-btn {
+  flex: 1; padding: 8px; background: #f0f0f0; border: 1px solid #ddd;
+  border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
 }
 </style>
 </head>
@@ -130,18 +134,18 @@ const DESTINATIONS = {
           "desc": "Snorkeling spot. Glass-bottom boats, coral, sea turtles." }
       ],
       "chabad": [
-        { "name": "Chabad Hikkaduwa", "lat": 6.1289, "lng": 80.1039,
+        { "name": "Chabad Hikkaduwa", "lat": 6.1393, "lng": 80.1048,
           "desc": "397 Galle Rd. +94 76 883 3653. Status uncertain for 2026." }
       ],
       "kosher": [],
       "fishmarket": [
-        { "name": "Hikkaduwa Fish Market", "lat": 6.1440, "lng": 80.0970,
+        { "name": "Hikkaduwa Fish Market", "lat": 6.1420, "lng": 80.0990,
           "desc": "At the fishing harbour. Fresh tuna, dorado. Go early AM (6-7). 100 LKR entry. Can have fish cooked on-site." }
       ],
       "cowork": [
         { "name": "The Eight Hikkaduwa", "lat": 6.125, "lng": 80.110,
           "desc": "Coliving + coworking. 300 Mbps. Oceanfront. the8hikkaduwa.com" },
-        { "name": "Salty Swamis", "lat": 6.122, "lng": 80.112,
+        { "name": "Salty Swamis", "lat": 6.1264, "lng": 80.1066,
           "desc": "Cafe + surf shop. 4.8/5 (655 reviews). Indoor AC, ocean view. 542 Galle Rd. 8AM-4PM. +94 77 832 6302" },
         { "name": "Saffron Robes Coffee", "lat": 6.133, "lng": 80.103,
           "desc": "Rooftop cafe, sea views. 4.9/5. Good WiFi." }
@@ -188,13 +192,13 @@ const DESTINATIONS = {
       "chabad": [],
       "kosher": [],
       "fishmarket": [
-        { "name": "Galle Fish Market", "lat": 6.0346, "lng": 80.2168,
+        { "name": "Galle Fish Market", "lat": 6.0369, "lng": 80.2263,
           "desc": "Near Galle Fort harbour. Fresh tuna, swordfish, snapper. Open 9AM-9PM, go early AM for best catch." }
       ],
       "cowork": [
         { "name": "South Ceylon Bakery & Cafe", "lat": 6.0142, "lng": 80.2494,
           "desc": "Coffee, pastries, good WiFi. 94 Wella Dewalaya Rd." },
-        { "name": "Cafe Aroma Unawatuna", "lat": 6.019, "lng": 80.248,
+        { "name": "Cafe Aroma Unawatuna", "lat": 6.0137, "lng": 80.2495,
           "desc": "AC, relaxing, laptop-friendly. 4.4/5. 202 Matara Rd." },
         { "name": "Wild and the Sage", "lat": 6.012, "lng": 80.249,
           "desc": "Bookstore-cafe, quiet and cozy. 4.8/5. Good for focused work." }
@@ -210,7 +214,7 @@ const DESTINATIONS = {
           "desc": "75B Sri Hemanandha Mawatha, Bataganvila. 5.0/5. +94 77 061 2021." },
         { "name": "Galle Fort (UNESCO)", "lat": 6.0286, "lng": 80.2168,
           "desc": "Historic fort. Cafes, shops, sunset walk. 10 min tuk-tuk." },
-        { "name": "Galle Train Station", "lat": 6.0346, "lng": 80.2141,
+        { "name": "Galle Train Station", "lat": 6.0341, "lng": 80.2143,
           "desc": "Main train station. Trains to Colombo, Matara, Weligama." }
       ],
       "transport": [
@@ -264,11 +268,11 @@ const DESTINATIONS = {
           "desc": "#1 nomad cafe. 4.7/5 (1553). Plant-forward food, reliable WiFi, many sockets. 640 Matara Rd." },
         { "name": "Plan B Coworking", "lat": 5.9680, "lng": 80.4430,
           "desc": "Dedicated cowork. 4.9/5 (3824). 1 Gbps fiber, AC, backup generator. 24/7. Bypass Rd." },
-        { "name": "Ceylon Sliders", "lat": 5.9730, "lng": 80.4270,
+        { "name": "Ceylon Sliders", "lat": 5.9680, "lng": 80.4238,
           "desc": "Beachfront cafe. Fiber WiFi. Specialty coffee, bowls, ocean view. Rooftop bar." },
         { "name": "Pasijou Coworking & Food", "lat": 5.973, "lng": 80.429,
           "desc": "Garden coworking + cafe. 30 Mbps + backup power. 10AM-10PM. 15 Matara Rd. +94 78 825 1707" },
-        { "name": "Outpost Weligama", "lat": 5.971, "lng": 80.427,
+        { "name": "Outpost Weligama", "lat": 5.9696, "lng": 80.4467,
           "desc": "Pro coworking. SLT Fiber, 2 AC rooms, standing desks, phone booths, pool. $12/day. 24/7." },
         { "name": "Hangten Rooftop", "lat": 5.9729, "lng": 80.4346,
           "desc": "Hostel rooftop. Good coffee, social events. Budget-friendly. WiFi available." },
@@ -329,11 +333,11 @@ const DESTINATIONS = {
       ],
       "chabad": [],
       "kosher": [
-        { "name": "Malu Poke", "lat": 5.966, "lng": 80.705,
+        { "name": "Malu Poke", "lat": 5.9620, "lng": 80.7065,
           "desc": "FISH: Build-your-own poke bowls. Choose tuna + veg (skip the shrimp option). Western-style. Beachfront. 8AM-9PM." }
       ],
       "fishmarket": [
-        { "name": "Dikwella Fish Market", "lat": 5.963, "lng": 80.697,
+        { "name": "Dikwella Fish Market", "lat": 5.9646, "lng": 80.6947,
           "desc": "Dikwella town, near harbour. Saturday is main market day. Fresh tuna, snapper, swordfish. Go 6-8 AM." },
         { "name": "Pehambiya Fishermen (boats)", "lat": 5.964, "lng": 80.701,
           "desc": "Buy direct from fishermen at east end of Dikwella Beach. Oru canoes return 5:30-7 AM. Cheapest fish." }
@@ -343,7 +347,7 @@ const DESTINATIONS = {
           "desc": "#1 digital nomad spot. 4.5/5 (469). Cliff-side headland, ocean breeze. Best coffee. Strong WiFi." },
         { "name": "Dots Bay House", "lat": 5.963, "lng": 80.7077,
           "desc": "Restaurant + bar + 24/7 coworking. 4.6/5 (2131). Desks & bean bags. Social hub of Hiri." },
-        { "name": "Clics Coliving & Coworking", "lat": 5.967, "lng": 80.709,
+        { "name": "Clics Coliving & Coworking", "lat": 5.9656, "lng": 80.7094,
           "desc": "AC coworking room. 80/40 Mbps fiber. 9AM-9PM. 700m from beach. clicscoliving.com" },
         { "name": "BUNCH", "lat": 5.967, "lng": 80.708,
           "desc": "Trendy brunch cafe + garden. Good coffee, smoothie bowls. WiFi. Vegan/GF options." }
@@ -397,7 +401,7 @@ const DESTINATIONS = {
           "desc": "4.8/5 (293). Specialty coffee, matcha, focaccia. Cowork-friendly. 2 min from beach." },
         { "name": "Cafe Ceylon / Kalatmaka", "lat": 5.9782, "lng": 80.3485,
           "desc": "Coffee + food near Kabalana. Coworking space inside (Kalatmaka, 5 EUR/day). +94 91 228 2729" },
-        { "name": "Black Honey Cafe", "lat": 5.974, "lng": 80.365,
+        { "name": "Black Honey Cafe", "lat": 5.9872, "lng": 80.3543,
           "desc": "Boutique cafe in rice paddies. Pool. Skilled baristas. 8AM-4PM. Good for morning work sessions." }
       ],
       "shopping": [
@@ -440,7 +444,7 @@ const DESTINATIONS = {
       "cowork": [
         { "name": "Surfescape Midigama", "lat": 5.9650, "lng": 80.3910,
           "desc": "Beachfront cafe + cowork. Fiber WiFi, AC. Healthy food. $5-10/day pass." },
-        { "name": "Ram's Surfing Beach Cafe", "lat": 5.9648, "lng": 80.3895,
+        { "name": "Ram's Surfing Beach Cafe", "lat": 5.9621, "lng": 80.3936,
           "desc": "Local beachfront cafe near Ram's break. Surfer crowd, simple food. WiFi." }
       ],
       "shopping": [],
@@ -451,7 +455,7 @@ const DESTINATIONS = {
           "desc": "Surf school. Longboard coaching, board rental." }
       ],
       "transport": [
-        { "name": "Midigama Railway Station", "lat": 5.9647, "lng": 80.393,
+        { "name": "Midigama Railway Station", "lat": 5.9652, "lng": 80.3915,
           "desc": "Small station on coastal line. Trains to Galle, Weligama." }
       ]
     }
@@ -465,19 +469,19 @@ const DESTINATIONS = {
       "rental": [],
       "chabad": [],
       "kosher": [
-        { "name": "The Slow \u2605", "lat": 5.945, "lng": 80.472,
+        { "name": "The Slow \u2605", "lat": 5.942, "lng": 80.466,
           "desc": "VEG: 100% vegan restaurant + design hotel. On the beach. 8AM-10PM daily. slow-vegan-sri-lanka.com" },
         { "name": "Hey Mama Mirissa \u2605", "lat": 5.947, "lng": 80.470,
           "desc": "VEG: Fully vegan/vegetarian cafe, family-owned. 8AM-9:30PM. +94 76 403 3874" }
       ],
       "fishmarket": [
-        { "name": "Mirissa Fisheries Harbour", "lat": 5.944, "lng": 80.474,
+        { "name": "Mirissa Fisheries Harbour", "lat": 5.9493, "lng": 80.4529,
           "desc": "Dawn fish auction 5:30-8 AM. Mackerel, skipjack tuna. Retail section, filleted on-site. Also whale watching departure." }
       ],
       "cowork": [
         { "name": "Capybara Cafe", "lat": 5.9480, "lng": 80.4710,
           "desc": "4.8/5 (1353). Garden cowork, 24/7 access, bean bags + desks, private rooms." },
-        { "name": "Shady Lane", "lat": 5.9465, "lng": 80.4680,
+        { "name": "Shady Lane", "lat": 5.9479, "lng": 80.4582,
           "desc": "4.7/5 (2579). Vegetarian cafe, nomad-friendly upstairs. 8AM-4PM. Cash only." },
         { "name": "Second Home", "lat": 5.948, "lng": 80.470,
           "desc": "Newest coworking in Mirissa. Inside The Hostel Mirissa. secondhome.lk" }
@@ -640,12 +644,16 @@ function createMarker(place, cat, locKey) {
   }
 
   const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${place.lat},${place.lng}`;
+  const safeName = place.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
   marker.bindPopup(
     `<div class="popup-name">${place.name}</div>` +
     `<div class="popup-cat" style="color:${color}">${CATEGORIES[cat].label}</div>` +
     (place.desc ? `<div class="popup-desc">${place.desc}</div>` : '') +
     distanceHtml +
-    `<a class="nav-btn" href="${navUrl}" target="_blank">Navigate</a>`
+    `<div class="popup-btns">` +
+    `<a class="nav-btn" href="${navUrl}" target="_blank">Navigate</a>` +
+    `<button class="copy-btn" onclick="(function(b){navigator.clipboard.writeText('${safeName}').then(function(){b.textContent='Copied!';setTimeout(function(){b.textContent='Copy'},1500)})})(this)">Copy</button>` +
+    `</div>`
   );
   return marker;
 }
