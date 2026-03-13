@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Sri Lanka South Coast — Coworking Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+#controls {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  background: #fff; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+#top-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+}
+
+#location-select {
+  flex: 1; padding: 8px 12px; font-size: 16px; border: 2px solid #ddd;
+  border-radius: 8px; background: #fff; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+
+#pin-count {
+  font-size: 13px; color: #666; white-space: nowrap;
+}
+
+#stay-hint {
+  font-size: 12px; color: #888; line-height: 1.3;
+}
+#stay-hint strong { color: #2d8a4e; }
+
+#stay-badge {
+  display: none; font-size: 12px; color: #2d8a4e; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+}
+#stay-badge:hover { text-decoration: underline; color: #c0392b; }
+
+#map { position: fixed; top: 0; left: 0; right: 0; bottom: 0; }
+
+.leaflet-popup-content-wrapper {
+  border-radius: 10px; font-size: 14px;
+}
+.leaflet-popup-content { margin: 10px 14px; line-height: 1.4; }
+.popup-name { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+.popup-cat { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.popup-desc { color: #555; font-size: 13px; }
+.popup-dist { color: #2d8a4e; font-size: 12px; font-weight: 600; margin-top: 5px; }
+.popup-btns { display: flex; gap: 6px; margin-top: 8px; }
+.nav-btn {
+  flex: 1; text-align: center; padding: 8px; background: #4285f4; color: #fff;
+  border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600;
+}
+.copy-btn {
+  flex: 1; padding: 8px; background: #f0f0f0; border: 1px solid #ddd;
+  border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+.stay-popup { text-align: center; }
+.stay-popup .popup-name { color: #2d8a4e; }
+.stay-popup .remove-btn {
+  margin-top: 8px; padding: 6px 16px; background: #e74c3c; color: #fff;
+  border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <div id="top-row">
+    <select id="location-select"></select>
+    <span id="pin-count"></span>
+  </div>
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <span id="stay-hint"><strong>Tap the map</strong> to drop your stay pin and see distances</span>
+    <span id="stay-badge" onclick="removeStayPin()"></span>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+
+const COWORK_COLOR = '#00cec9';
+const STAY_COLOR = '#2d8a4e';
+
+const DESTINATIONS = {
+  "hikkaduwa": {
+    "center": [6.133, 80.103],
+    "zoom": 14,
+    "cowork": [
+      { "name": "The Eight Hikkaduwa", "lat": 6.125, "lng": 80.110,
+        "desc": "Coliving + coworking. 300 Mbps. Oceanfront. the8hikkaduwa.com" },
+      { "name": "Salty Swamis", "lat": 6.1264, "lng": 80.1066,
+        "desc": "Cafe + surf shop. 4.8/5 (655 reviews). Indoor AC, ocean view. 542 Galle Rd. 8AM-4PM. +94 77 832 6302" },
+      { "name": "Saffron Robes Coffee", "lat": 6.133, "lng": 80.103,
+        "desc": "Rooftop cafe, sea views. 4.9/5. Good WiFi." }
+    ]
+  },
+  "unawatuna": {
+    "center": [6.015, 80.245],
+    "zoom": 15,
+    "cowork": [
+      { "name": "South Ceylon Bakery & Cafe", "lat": 6.0142, "lng": 80.2494,
+        "desc": "Coffee, pastries, good WiFi. 94 Wella Dewalaya Rd." },
+      { "name": "Cafe Aroma Unawatuna", "lat": 6.0137, "lng": 80.2495,
+        "desc": "AC, relaxing, laptop-friendly. 4.4/5. 202 Matara Rd." },
+      { "name": "Wild and the Sage", "lat": 6.012, "lng": 80.249,
+        "desc": "Bookstore-cafe, quiet and cozy. 4.8/5. Good for focused work." }
+    ]
+  },
+  "weligama": {
+    "center": [5.973, 80.429],
+    "zoom": 15,
+    "cowork": [
+      { "name": "Layback Rooftop Cafe", "lat": 5.9730, "lng": 80.4310,
+        "desc": "Rooftop cafe + AC coworking. 4.8/5 (506). Healthy food, smoothies. 8AM-5PM. +94 76 630 0126" },
+      { "name": "NOMAD Cafe", "lat": 5.9741, "lng": 80.4378,
+        "desc": "#1 nomad cafe. 4.7/5 (1553). Plant-forward food, reliable WiFi, many sockets. 640 Matara Rd." },
+      { "name": "Plan B Coworking", "lat": 5.9680, "lng": 80.4430,
+        "desc": "Dedicated cowork. 4.9/5 (3824). 1 Gbps fiber, AC, backup generator. 24/7. Bypass Rd." },
+      { "name": "Ceylon Sliders", "lat": 5.9680, "lng": 80.4238,
+        "desc": "Beachfront cafe. Fiber WiFi. Specialty coffee, bowls, ocean view. Rooftop bar." },
+      { "name": "Pasijou Coworking & Food", "lat": 5.973, "lng": 80.429,
+        "desc": "Garden coworking + cafe. 30 Mbps + backup power. 10AM-10PM. 15 Matara Rd. +94 78 825 1707" },
+      { "name": "Outpost Weligama", "lat": 5.9696, "lng": 80.4467,
+        "desc": "Pro coworking. SLT Fiber, 2 AC rooms, standing desks, phone booths, pool. $12/day. 24/7." },
+      { "name": "Hangten Rooftop", "lat": 5.9729, "lng": 80.4346,
+        "desc": "Hostel rooftop. Good coffee, social events. Budget-friendly. WiFi available." },
+      { "name": "Moochie's", "lat": 5.974, "lng": 80.430,
+        "desc": "Quiet cafe on side street. Smoothie bowls, vegan/GF options. Good WiFi. 32 Samaraweera Pl." }
+    ]
+  },
+  "ahangama": {
+    "center": [5.974, 80.365],
+    "zoom": 14,
+    "cowork": [
+      { "name": "Focus Hub Coworking & Cafe", "lat": 5.9716, "lng": 80.3655,
+        "desc": "4.7/5 (71). Good WiFi, AC rooms. Solar panels. 2,000 LKR/day. Ahangama main road." },
+      { "name": "NETS Cowork", "lat": 5.9719, "lng": 80.3717,
+        "desc": "4.8/5 (106). High-speed WiFi, standing desks, solar backup. 24hr access. Pool + garden." },
+      { "name": "Zippi Cafe", "lat": 5.9700, "lng": 80.3640,
+        "desc": "4.8/5 (293). Specialty coffee, matcha, focaccia. Cowork-friendly. 2 min from beach." },
+      { "name": "Cafe Ceylon / Kalatmaka", "lat": 5.9782, "lng": 80.3485,
+        "desc": "Coffee + food near Kabalana. Coworking space inside (Kalatmaka, 5 EUR/day). +94 91 228 2729" },
+      { "name": "Black Honey Cafe", "lat": 5.9872, "lng": 80.3543,
+        "desc": "Boutique cafe in rice paddies. Pool. Skilled baristas. 8AM-4PM. Good for morning work sessions." }
+    ]
+  },
+  "midigama": {
+    "center": [5.962, 80.393],
+    "zoom": 15,
+    "cowork": [
+      { "name": "Surfescape Midigama", "lat": 5.9650, "lng": 80.3910,
+        "desc": "Beachfront cafe + cowork. Fiber WiFi, AC. Healthy food. $5-10/day pass." },
+      { "name": "Ram's Surfing Beach Cafe", "lat": 5.9621, "lng": 80.3936,
+        "desc": "Local beachfront cafe near Ram's break. Surfer crowd, simple food. WiFi." }
+    ]
+  },
+  "hiriketiya": {
+    "center": [5.963, 80.705],
+    "zoom": 15,
+    "cowork": [
+      { "name": "Mond", "lat": 5.9601, "lng": 80.7051,
+        "desc": "#1 digital nomad spot. 4.5/5 (469). Cliff-side headland, ocean breeze. Best coffee. Strong WiFi." },
+      { "name": "Dots Bay House", "lat": 5.963, "lng": 80.7077,
+        "desc": "Restaurant + bar + 24/7 coworking. 4.6/5 (2131). Desks & bean bags. Social hub of Hiri." },
+      { "name": "Clics Coliving & Coworking", "lat": 5.9656, "lng": 80.7094,
+        "desc": "AC coworking room. 80/40 Mbps fiber. 9AM-9PM. 700m from beach. clicscoliving.com" },
+      { "name": "BUNCH", "lat": 5.967, "lng": 80.708,
+        "desc": "Trendy brunch cafe + garden. Good coffee, smoothie bowls. WiFi. Vegan/GF options." }
+    ]
+  },
+  "mirissa": {
+    "center": [5.948, 80.468],
+    "zoom": 15,
+    "cowork": [
+      { "name": "Capybara Cafe", "lat": 5.9480, "lng": 80.4710,
+        "desc": "4.8/5 (1353). Garden cowork, 24/7 access, bean bags + desks, private rooms." },
+      { "name": "Shady Lane", "lat": 5.9479, "lng": 80.4582,
+        "desc": "4.7/5 (2579). Vegetarian cafe, nomad-friendly upstairs. 8AM-4PM. Cash only." },
+      { "name": "Second Home", "lat": 5.948, "lng": 80.470,
+        "desc": "Newest coworking in Mirissa. Inside The Hostel Mirissa. secondhome.lk" }
+    ]
+  }
+};
+
+// --- Map setup ---
+const map = L.map('map', { zoomControl: false });
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap',
+  maxZoom: 18
+}).addTo(map);
+
+let currentLocation = Object.keys(DESTINATIONS)[0];
+let coworkMarkers = [];
+let stayMarker = null;
+let stayLatLng = null;
+
+// --- Location selector ---
+const select = document.getElementById('location-select');
+for (const loc of Object.keys(DESTINATIONS)) {
+  const opt = document.createElement('option');
+  opt.value = loc;
+  opt.textContent = loc.charAt(0).toUpperCase() + loc.slice(1);
+  select.appendChild(opt);
+}
+select.value = currentLocation;
+select.addEventListener('change', () => {
+  currentLocation = select.value;
+  stayLatLng = null;
+  if (stayMarker) { map.removeLayer(stayMarker); stayMarker = null; }
+  document.getElementById('stay-badge').style.display = 'none';
+  document.getElementById('stay-hint').style.display = '';
+  renderMap();
+});
+
+// --- Haversine ---
+function haversineMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function formatDistance(meters) {
+  if (meters < 100) return 'at your stay';
+  if (meters < 1000) return `~${Math.round(meters / 50) * 50}m away`;
+  const km = (meters / 1000).toFixed(1);
+  const walkMin = Math.round(meters / 80);
+  return `~${km} km (~${walkMin} min walk)`;
+}
+
+// --- Create cowork marker ---
+function createCoworkMarker(place) {
+  const marker = L.circleMarker([place.lat, place.lng], {
+    radius: 11,
+    fillColor: COWORK_COLOR,
+    color: '#fff',
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.9
+  });
+  marker._placeData = place;
+  updateCoworkPopup(marker);
+  return marker;
+}
+
+function updateCoworkPopup(marker) {
+  const place = marker._placeData;
+  let distanceHtml = '';
+  if (stayLatLng) {
+    const meters = haversineMeters(stayLatLng.lat, stayLatLng.lng, place.lat, place.lng);
+    distanceHtml = `<div class="popup-dist">${formatDistance(meters)}</div>`;
+  }
+
+  const navUrl = `https://www.google.com/maps/dir/?api=1` +
+    (stayLatLng ? `&origin=${stayLatLng.lat},${stayLatLng.lng}` : '') +
+    `&destination=${place.lat},${place.lng}&travelmode=walking`;
+  const safeName = place.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+  marker.bindPopup(
+    `<div class="popup-name">${place.name}</div>` +
+    `<div class="popup-cat" style="color:${COWORK_COLOR}">Cowork</div>` +
+    (place.desc ? `<div class="popup-desc">${place.desc}</div>` : '') +
+    distanceHtml +
+    `<div class="popup-btns">` +
+    `<a class="nav-btn" href="${navUrl}" target="_blank">${stayLatLng ? 'Directions' : 'Navigate'}</a>` +
+    `<button class="copy-btn" onclick="(function(b){navigator.clipboard.writeText('${safeName}').then(function(){b.textContent='Copied!';setTimeout(function(){b.textContent='Copy'},1500)})})(this)">Copy</button>` +
+    `</div>`
+  );
+}
+
+// --- Stay pin ---
+function placeStayPin(latlng) {
+  stayLatLng = latlng;
+
+  if (stayMarker) map.removeLayer(stayMarker);
+
+  const stayIcon = L.divIcon({
+    html: `<div style="
+      width: 28px; height: 28px; background: ${STAY_COLOR}; border: 3px solid #fff;
+      border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: #fff;
+    ">&#8962;</div>`,
+    className: '',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+
+  stayMarker = L.marker(latlng, { icon: stayIcon, draggable: true }).addTo(map);
+  stayMarker.bindPopup(
+    `<div class="stay-popup">` +
+    `<div class="popup-name">Your Stay</div>` +
+    `<div class="popup-desc">Drag to reposition</div>` +
+    `<button class="remove-btn" onclick="removeStayPin()">Remove pin</button>` +
+    `</div>`
+  );
+
+  stayMarker.on('dragend', () => {
+    stayLatLng = stayMarker.getLatLng();
+    refreshDistances();
+  });
+
+  document.getElementById('stay-hint').style.display = 'none';
+  document.getElementById('stay-badge').style.display = '';
+  document.getElementById('stay-badge').textContent = 'Your stay placed (click to remove)';
+
+  refreshDistances();
+}
+
+function removeStayPin() {
+  if (stayMarker) { map.removeLayer(stayMarker); stayMarker = null; }
+  stayLatLng = null;
+  document.getElementById('stay-badge').style.display = 'none';
+  document.getElementById('stay-hint').style.display = '';
+  refreshDistances();
+}
+
+function refreshDistances() {
+  for (const marker of coworkMarkers) {
+    updateCoworkPopup(marker);
+  }
+}
+
+// --- Map click ---
+map.on('click', (e) => {
+  placeStayPin(e.latlng);
+});
+
+// --- Render ---
+function renderMap() {
+  for (const m of coworkMarkers) map.removeLayer(m);
+  coworkMarkers = [];
+
+  const dest = DESTINATIONS[currentLocation];
+  map.setView(dest.center, dest.zoom);
+
+  for (const place of dest.cowork) {
+    const m = createCoworkMarker(place);
+    m.addTo(map);
+    coworkMarkers.push(m);
+  }
+  updatePinCount();
+}
+
+function updatePinCount() {
+  const dest = DESTINATIONS[currentLocation];
+  document.getElementById('pin-count').textContent = `${dest.cowork.length} spots`;
+}
+
+function adjustMapPadding() {
+  const h = document.getElementById('controls').offsetHeight;
+  document.getElementById('map').style.top = h + 'px';
+  map.invalidateSize();
+}
+
+window.addEventListener('resize', adjustMapPadding);
+setTimeout(adjustMapPadding, 100);
+
+renderMap();
+</script>
+</body>
+</html>
